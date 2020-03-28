@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memorynotes/main.dart';
+import 'package:memorynotes/screens/home_screen.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -125,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                     });
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage(title: 'test')),
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
                     );
                   }
                 },
