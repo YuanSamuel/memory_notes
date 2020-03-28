@@ -1,38 +1,38 @@
 {
   "project_info": {
-    "project_number": "939327315336",
-    "firebase_url": "https://memorynotes-19488.firebaseio.com",
-    "project_id": "memorynotes-19488",
-    "storage_bucket": "memorynotes-19488.appspot.com"
+    "project_number": "326694662195",
+    "firebase_url": "https://memory-1cd7e.firebaseio.com",
+    "project_id": "memory-1cd7e",
+    "storage_bucket": "memory-1cd7e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:939327315336:android:81bd38e01152357dd7ee3d",
+        "mobilesdk_app_id": "1:326694662195:android:f2e2d5122504904a2df346",
         "android_client_info": {
           "package_name": "org.idea.memorynotes"
         }
       },
       "oauth_client": [
         {
-          "client_id": "939327315336-eindd1sgjmj152dc9a9er2f810n0e156.apps.googleusercontent.com",
+          "client_id": "326694662195-nl03nu25tt3degcqluhroetpmb6kvj3k.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCEZd-mT_JGCgXMBN5ugL4luuhOkkrDPi4"
+          "current_key": "AIzaSyDDlpk57SBguNzg2e_0vqQyboOxbdpctpU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "939327315336-eindd1sgjmj152dc9a9er2f810n0e156.apps.googleusercontent.com",
+              "client_id": "326694662195-nl03nu25tt3degcqluhroetpmb6kvj3k.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "939327315336-4hleupqoc72d2270gs4o148mudrog0mf.apps.googleusercontent.com",
+              "client_id": "326694662195-bsg92p33r0rfvhb7mapo6lu9hbr8jgdp.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "org.idea.memorynotes"
