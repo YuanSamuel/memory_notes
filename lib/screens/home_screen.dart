@@ -22,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.white,),
       body: _pageOptions[_selectedTab],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
