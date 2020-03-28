@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memorynotes/main.dart';
 
+import 'home_screen.dart';
+
 class RegisterPage extends StatefulWidget {
   RegisterPage({Key key, this.title}) : super(key: key);
 
@@ -215,7 +217,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     passwordInputController.clear();
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage(title: "test",)),
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
                     );
                   }
                 },
