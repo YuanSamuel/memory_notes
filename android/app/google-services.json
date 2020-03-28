@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "939327315336",
+    "firebase_url": "https://memorynotes-19488.firebaseio.com",
+    "project_id": "memorynotes-19488",
+    "storage_bucket": "memorynotes-19488.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:939327315336:android:81bd38e01152357dd7ee3d",
+        "android_client_info": {
+          "package_name": "org.idea.memorynotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "939327315336-eindd1sgjmj152dc9a9er2f810n0e156.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEZd-mT_JGCgXMBN5ugL4luuhOkkrDPi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "939327315336-eindd1sgjmj152dc9a9er2f810n0e156.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "939327315336-4hleupqoc72d2270gs4o148mudrog0mf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.idea.memorynotes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
