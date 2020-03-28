@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:memorynotes/music_app/main.dart';
 import 'package:memorynotes/screens/login_page.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MusicApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
