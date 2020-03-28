@@ -26,8 +26,12 @@ dependencies:
   firebase_auth: ^0.15.5+3
   cloud_firestore: ^0.13.4+2
   google_maps_flutter: ^0.5.25+2
-
+  geolocator: ^5.3.0
+  permission_handler: ^4.4.0+hotfix.2
   curved_navigation_bar: ^0.3.2
+  flutter_google_places: ^0.2.4
+  location: ^3.0.1
+
 
 dev_dependencies:
   flutter_test:

@@ -123,11 +123,12 @@ class _LoginPageState extends State<LoginPage> {
                           .collection("users")
                           .document(currentUser.user.uid)
                           .get();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
                     });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()),
-                    );
+
                   }
                 },
               ),
