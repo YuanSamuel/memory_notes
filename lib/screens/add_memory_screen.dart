@@ -104,15 +104,36 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: 10.0,),
+                        //text input one
+                        Row(
+                          children: <Widget>[
+                            SizedBox(width: 15.0,),
+                            Container(height: 50.0,
+                                child: VerticalDivider(color: Colors.black, width: 10.0,)),
+                            Container(
+                              margin: EdgeInsets.all(10.0),
+                              height: 50.0,
+                              width: width - 100,
+                              color: Colors.white,
+                              child: TextFormField(
+                                decoration: InputDecoration(hintText: "How does this place make you feel",
+                                    border: InputBorder.none),
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                              ),
+                            ),
+                          ],
+                        ),
+
                         //text input
                         Row(
                           children: <Widget>[
                             SizedBox(width: 15.0,),
-                            Container(height: 150.0,
+                            Container(height: 100.0,
                                 child: VerticalDivider(color: Colors.black, width: 10.0,)),
                             Container(
                               margin: EdgeInsets.all(10.0),
-                              height: 150.0,
+                              height: 100.0,
                               width: width - 100,
                               color: Colors.white,
                               child: TextFormField(
