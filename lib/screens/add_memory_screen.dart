@@ -12,6 +12,8 @@ import 'package:path/path.dart' as Path;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class AddMemoryScreen extends StatefulWidget {
   @override
@@ -21,6 +23,11 @@ class AddMemoryScreen extends StatefulWidget {
 class _AddMemoryScreenState extends State<AddMemoryScreen> {
   TextEditingController feelingInputController;
   TextEditingController descriptionInputController;
+  bool _hasSpeech = false;
+  String lastWords = "";
+  String lastError = "";
+  String lastStatus = "";
+  final SpeechToText speech = SpeechToText();
 
   Widget _nowPlayingPanel() {
     return Container(
@@ -78,8 +85,21 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
 
   void initState() {
     super.initState();
+    initSpeechState();
     feelingInputController = new TextEditingController();
     descriptionInputController = new TextEditingController();
+  }
+
+  Future<void> initSpeechState() async {
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.microphone);
+    print(permission);
+    bool hasSpeech = await speech.initialize(onStatus: statusListener);
+    if (!mounted) return;
+    setState(() {
+      _hasSpeech = hasSpeech;
+    });
+    print('init');
   }
 
   Future getImage() async {
@@ -115,34 +135,8 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
   }
 
   Future getRecording() async {
-    PermissionStatus permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.microphone);
-    print(permission);
-    if (permission != PermissionStatus.granted) {
-      PermissionHandler().requestPermissions([PermissionGroup.microphone]);
-    }
-    Future<String> result = flutterSound.startRecorder(
-      codec: t_CODEC.CODEC_AAC,
-    );
-    result.then((path) async {
-      print('startRecorder: $path');
-
-      StreamSubscription<RecordStatus> _recorderSubscription =
-          flutterSound.onRecorderStateChanged.listen((e) {
-        DateTime date =
-            new DateTime.fromMillisecondsSinceEpoch(e.currentPosition.toInt());
-        String txt = DateFormat('mm:ss:SS', 'en_US').format(date);
-      });
-
-      String result2 = await flutterSound.stopRecorder();
-      print('stopRecorder: $result');
-      if (_recorderSubscription != null) {
-        _recorderSubscription.cancel();
-        _recorderSubscription = null;
-      }
-
-      print(path);
-    });
+    startListening();
+    print("listening");
   }
 
   Widget _buildSuggestedSong(String songName, String artist) {
@@ -370,5 +364,43 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
         ),
       ),
     );
+  }
+
+  void startListening() {
+    print("START LISTENING");
+    lastWords = "";
+    lastError = "";
+    speech.listen(onResult: resultListener,listenFor: Duration(seconds: 59));
+    setState(() {
+
+    });
+  }
+
+  void stopListening() {
+    speech.stop();
+    setState(() {
+
+    });
+  }
+
+  void cancelListening() {
+    speech.cancel();
+    setState(() {
+
+    });
+  }
+
+  void resultListener(SpeechRecognitionResult result) {
+    setState(() {
+      lastWords = "${result.recognizedWords}";
+      descriptionInputController.text = lastWords;
+      print(lastWords);
+    });
+  }
+
+  void statusListener(String status) {
+    setState(() {
+      lastStatus = "$status";
+    });
   }
 }
