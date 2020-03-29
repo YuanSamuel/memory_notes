@@ -5,6 +5,8 @@ class StyleConstants{
 
   static Color backgroundColor = new Color(0xffF0F4F7);
 
+  static Color backgroundColorDark = new Color(0xffc3c7c9);
+
   static TextStyle loginHintTextStyle = TextStyle(
     color: Colors.white54,
     fontFamily: 'OpenSans',
