@@ -125,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: double.infinity,
                               child: IconButton(icon: Icon(Icons.check),
                                 color: StyleConstants.backgroundColor,
-                                onPressed: () => _submit(context),
+                                onPressed: () {},
                               ),
                             ),
 
@@ -159,56 +159,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
 
-                  /*Expanded(
-                    child: Container(
-                      //height: 400.0,
-                      child:GridView.count(
-                        primary: false,
-                        padding: const EdgeInsets.all(20),
-                        crossAxisSpacing: 20,
-                        mainAxisSpacing: 20,
-                        crossAxisCount: 2,
-                        children: <Widget>[
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            height: 50.0,
-                            width: 50.0,
-                            child: Image.asset('assets/images/1.jpg', fit: BoxFit.cover,),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            height: 50.0,
-                            width: 50.0,
-                            child: Image.asset('assets/images/1.jpg', fit: BoxFit.cover,),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            height: 50.0,
-                            width: 50.0,
-                            child: Image.asset('assets/images/1.jpg', fit: BoxFit.cover,),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            height: 50.0,
-                            width: 50.0,
-                            child: Image.asset('assets/images/1.jpg', fit: BoxFit.cover,),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            height: 50.0,
-                            width: 50.0,
-                            child: Image.asset('assets/images/1.jpg', fit: BoxFit.cover,),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            height: 50.0,
-                            width: 50.0,
-                            child: Image.asset('assets/images/1.jpg', fit: BoxFit.cover,),
-                          ),
-                        ],
-                      )
-                    ),
-                  )
 
 
                 ],
