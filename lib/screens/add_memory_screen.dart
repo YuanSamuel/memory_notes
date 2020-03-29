@@ -23,10 +23,12 @@ import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:location/location.dart' as lo;
+import 'package:geocoder/geocoder.dart';
 
 class AddMemoryScreen extends StatefulWidget {
-  AddMemoryScreen({Key key, this.locationData}) : super(key: key);
+  AddMemoryScreen({Key key, this.locationData, this.address}) : super(key: key);
   final lo.LocationData locationData;
+  final Address address;
   @override
   _AddMemoryScreenState createState() => _AddMemoryScreenState();
 }
@@ -397,7 +399,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Text(
-                    'La Centerra',
+                    widget.address.featureName,
                     style:
                         TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold),
                   ),
@@ -408,7 +410,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Text(
-                    'Katy, Texas',
+                    widget.address.locality,
                     style:
                         TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),
                   ),

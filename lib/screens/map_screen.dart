@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memorynotes/screens/add_memory_screen.dart';
+import 'package:memorynotes/screens/home_screen.dart';
 import 'package:memorynotes/screens/view_memory_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:location/location.dart' as lo;
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:http/http.dart';
+import 'package:geocoder/geocoder.dart';
 
 
 class MapScreen extends StatefulWidget {
@@ -24,9 +26,12 @@ class _MapScreenState extends State<MapScreen> {
   static String pword = '53cacf2f6d17a96a1b14acb0c2f22fee';
   var authn = 'Basic ' + base64Encode(utf8.encode('$uname:$pword'));
 
+  List<Marker> allMarkers = new List<Marker>();
+
   GoogleMapController mapController;
   lo.LocationData currentPos;
   lo.Location location = new lo.Location();
+  Address first;
 
   final LatLng center = const LatLng(45.521563, -122.677433);
   int number = 0;
@@ -79,7 +84,11 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onAddMemory(BuildContext context){
-    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen(locationData: currentPos)));
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen(locationData: currentPos, address: first,))).then((value) {
+      setState(() {
+        createMarkers();
+      });
+    });
   }
 
   void _onViewMemory(BuildContext context){
@@ -126,7 +135,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  
+
   @override
   Widget build(BuildContext context) {
     print(currentPos);
@@ -143,15 +152,11 @@ class _MapScreenState extends State<MapScreen> {
                   height: MediaQuery.of(context).size.height,
                   child: GoogleMap(
                     mapType: MapType.satellite,
-                    markers: [Marker(
-                      markerId: MarkerId("Position"),
-                      position: LatLng(currentPos.latitude, currentPos.longitude),
-                      onTap: _markerPressed,
-                    )].toSet(),
+                    markers: allMarkers.toSet(),
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
                         target: LatLng(currentPos.latitude, currentPos.longitude),
-                        zoom: 15.0
+                        zoom: 17.0
                     ),
                   ),
                 ),
@@ -188,7 +193,33 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
   }
-  
+
+
+
+  createMarkers() async {
+    allMarkers.clear();
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
+    for (int i = 0; i < snap.data['entries'].length; i++) {
+      DocumentSnapshot location = await Firestore.instance.collection('entries').document(snap.data['entries'][i]).get();
+      print("Create"+i.toString());
+      allMarkers.add(new Marker(
+        markerId: MarkerId(((location.data["description"].hashCode + location.data["coords"].latitude + location.data["coords"].longitude) * Random().nextInt(20)).toString()),
+        position: LatLng(location.data["coords"].latitude, location.data["coords"].longitude),
+        onTap: _markerPressed,
+      ));
+    }
+    String st = "String";
+    BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(14, 20)), "assets/images/currentpin3.png");
+    allMarkers.add(new Marker(
+      markerId: MarkerId(((st.hashCode + currentPos.latitude + currentPos.longitude) * Random().nextInt(20)).toString()),
+      position: LatLng(currentPos.latitude, currentPos.longitude),
+      onTap: _markerPressed,
+      icon: icon,
+    ));
+    print(allMarkers[2]);
+  }
+
   startPosStream() async {
 
     PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.locationAlways);
@@ -198,10 +229,12 @@ class _MapScreenState extends State<MapScreen> {
     }
     print('change');
     lo.LocationData set = await location.getLocation();
+    print(currentPos);
+    createMarkers();
+    var addresses = await Geocoder.local.findAddressesFromCoordinates(new Coordinates(currentPos.latitude, currentPos.longitude));
     setState(() {
+      first = addresses.first;
       currentPos = set;
     });
-    print(currentPos);
-
   }
 }

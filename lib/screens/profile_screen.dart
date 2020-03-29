@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -9,6 +11,27 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
+
+  String uid;
+  String name;
+  int numEntries;
+
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  getUserInfo() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+
+    DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
+
+    setState(() {
+      uid = user.uid;
+      name = snap["firstName"] + " " + snap["lastName"];
+      numEntries = snap["entries"].length;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +48,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 10.0,),
                   CircleAvatar(backgroundImage: AssetImage('assets/images/profilepic.jpg'), radius: 75.0,),
                   SizedBox(height: 10.0,),
-                  Text('Lucas Cai', style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),),
+                  name == null ? Text('Loading...', style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),) :
+                  Text(name, style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),),
 
                   SizedBox(height: 10.0,),
 
@@ -36,7 +60,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   SizedBox(height: 10.0),
 
-                  Text('200 Memories Recorded', style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),),
+                  numEntries == null ? Text('Loading...', style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),) :
+                  Text('${numEntries} Entries Recorded', style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),),
 
                   SizedBox(height: 10.0,),
 
