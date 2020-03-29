@@ -28,11 +28,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                IconButton(icon: Icon(Icons.mood_bad), onPressed: (){},),
-                IconButton(icon: Icon(Icons.sentiment_dissatisfied), onPressed: (){},),
-                IconButton(icon: Icon(Icons.sentiment_neutral), onPressed: (){},),
-                IconButton(icon: Icon(Icons.sentiment_satisfied),  onPressed: (){},),
-                IconButton(icon: Icon(Icons.sentiment_very_satisfied), onPressed: (){},),
+                IconButton(icon: Icon(Icons.mood_bad, size: 35.0,), onPressed: (){},),
+                IconButton(icon: Icon(Icons.sentiment_dissatisfied, size: 35.0), onPressed: (){},),
+                IconButton(icon: Icon(Icons.sentiment_neutral, size: 35.0), onPressed: (){},),
+                IconButton(icon: Icon(Icons.sentiment_satisfied, size: 35.0),  onPressed: (){},),
+                IconButton(icon: Icon(Icons.sentiment_very_satisfied, size: 35.0), onPressed: (){},),
               ],
             ),
 
