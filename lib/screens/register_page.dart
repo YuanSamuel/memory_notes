@@ -102,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         return 'Please Enter a Valid First Name';
                     },
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height / 20,),
+                  SizedBox(height: MediaQuery.of(context).size.height / 25,),
                   TextFormField(
                     controller: lastNameInputController,
                     decoration: InputDecoration(
@@ -133,7 +133,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       }
                     },
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height / 20,),
+                  SizedBox(height: MediaQuery.of(context).size.height / 25,),
                   TextFormField(
                     controller: emailInputController,
                     validator: emailValidator,
@@ -162,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       )
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height / 20,),
+                  SizedBox(height: MediaQuery.of(context).size.height / 25,),
                   TextFormField(
                     controller: passwordInputController,
                     obscureText: true,
@@ -192,7 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       )
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height / 20,),
+                  SizedBox(height: MediaQuery.of(context).size.height / 25,),
                   TextFormField(
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -219,7 +219,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     controller: phoneNumberInputController,
                     validator: (value) {
-
+                      if (!RegExp(r'\+\d{11,13}').hasMatch(phoneNumberInputController.text)) {
+                        return 'Enter a phone code with your country code (Ex: +12811234567)';
+                      }
                     },
                   )
                 ],
