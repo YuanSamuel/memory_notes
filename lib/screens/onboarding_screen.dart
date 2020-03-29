@@ -37,7 +37,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                         padding: const EdgeInsets.all(8.0
                         ),
                         child: Image(
-                          image: AssetImage('assets/onboarding/onboarding0.png'
+                          image: AssetImage('assets/onboarding/undraw_Memory_storage.png'
                           ),
                         ),
                       ),
@@ -50,9 +50,9 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                             child: Column(
                               children: <Widget>[
                                 Text(
-                                    'Track your mood and', style: StyleConstants.onboardingText
+                                    'Organize your thoughts', style: StyleConstants.onboardingText
                                 ),
-                                Text('see changes over time',
+                                Text('and memories',
                                     style: StyleConstants.onboardingText
                                 ),
                               ],
@@ -82,7 +82,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                         padding: const EdgeInsets.all(8.0
                         ),
                         child: Image(
-                          image: AssetImage('assets/onboarding/onboarding1.png'
+                          image: AssetImage('assets/onboarding/undraw_Destination1.png'
                           ),
                         ),
                       ),
@@ -93,7 +93,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(16.0
                             ),
-                            child: Text('Write notes for your future self',
+                            child: Text('Place memory markers on the map',
                                 style: StyleConstants.onboardingText
                             ),
                           ),
@@ -122,7 +122,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                         padding: const EdgeInsets.all(8.0
                         ),
                         child: Image(
-                          image: AssetImage('assets/onboarding/onboarding2.png'
+                          image: AssetImage('assets/onboarding/undraw_music.png'
                           ),
                         ),
                       ),
@@ -134,11 +134,11 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                           ),
                           child: Column(
                               children: <Widget>[
-                                Text('Connect with a community of',
+                                Text('Tie the memory with',
                                     style: StyleConstants.onboardingText
                                 ),
                                 Text(
-                                    'diverse individuals', style: StyleConstants.onboardingText
+                                    'a related song using AI', style: StyleConstants.onboardingText
                                 ),
                               ]
                           ),
@@ -206,7 +206,7 @@ class FinalScreen extends StatelessWidget {
                   shape: CircleBorder(),
                   child: CircleAvatar(
                     backgroundColor: Colors.grey[100],
-                    child: FlutterLogo(
+                    child: Icon(Icons.music_note,
                       size: 100.0,
                     ),
                     radius: 100.0,
@@ -216,7 +216,7 @@ class FinalScreen extends StatelessWidget {
             //SizedBox(height: 100,),
             Center(
               child: Text(
-                'Begin your journey today',
+                'Begin remembering today',
                 style: StyleConstants.onboardingText,
               ),
             ),
@@ -291,7 +291,7 @@ class _FirstScreen extends State<FirstScreen> {
                             shape: CircleBorder(),
                             child: CircleAvatar(
                               backgroundColor: Colors.grey[100],
-                              child: FlutterLogo(
+                              child: Icon(Icons.music_note,
                                 size: 100.0,
                               ),
                               radius: 100.0,
