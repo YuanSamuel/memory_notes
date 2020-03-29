@@ -132,125 +132,67 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     }
   }
 
+  Widget _nowPlayingPanel(){
+    print(widget.song);
+    return Container(
+      //height: 10.0,
+        color: Colors.white,
+        child: Row(
+          children: <Widget>[
+            //little picture
+            Container(
+              height: 60.0,
+              width: 60.0,
+              child: Image.network(
+                widget.song.artworkUrl(512),
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(width: 10.0,),
+            //song name and artist
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(widget.song.title, style: TextStyle(color: Colors.black, fontSize: 20.0, fontWeight: FontWeight.w400),),
+                Text(widget.song.artistName, style: TextStyle(color: Colors.black, fontSize: 15.0, fontWeight: FontWeight.w300),),
+              ],
+            ),
+            Spacer(),
+            FlatButton(
+              onPressed: (){
+                if (_isPlaying) {
+                  _pausePlayer();
+                } else {
+                  if (_playerSubscription == null) {
+                    this.setState(() {
+                      this._isPlaying = true;
+                    });
+                    Timer(Duration(milliseconds: 200), () {
+                      startPlayer(widget.song.previewUrl);
+                    });
+                  } else {
+                    _resumePlayer();
+                  }
+                }
+              },
+              padding: EdgeInsets.all(8.0),
+              child: Image(
+                image: _isPlaying
+                    ? AssetImage('res/icons/ic_pause.png')
+                    : AssetImage('res/icons/ic_play.png'),
+              ),
+            ),
+          ],
+        )
+    );
+  }
+  
+  
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        child: ListView(
-      children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-                height: MediaQuery.of(context).size.height / 2.5,
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey,
-                    blurRadius: 10.0, // has the effect of softening the shadow
-                    spreadRadius: 1.0, // has the effect of extending the shadow
-                    offset: Offset(
-                      0.5, // horizontal, move right 10
-                      0.5, // vertical, move down 10
-                    ),
-                  )
-                ]),
-                margin: EdgeInsets.only(top: 16, right: 16.0, left: 16.0),
-                child: ClipRRect(
-                  clipBehavior: Clip.antiAlias,
-                  borderRadius: BorderRadius.circular(10),
-                  child: AspectRatio(
-                    aspectRatio: 1 / 1,
-                    child: Image.network(
-                      widget.song.artworkUrl(512),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                )),
-            Container(
-                margin: EdgeInsets.only(top: 32, left: 16, right: 16),
-                width: MediaQuery.of(context).size.width,
-                child: CupertinoSlider(
-                    value: slider_current_position,
-                    min: 0.0,
-                    max: max_duration,
-                    onChangeEnd: (x) {},
-                    onChangeStart: (x) {},
-                    onChanged: (double value) async {
-                      await _seekToPlayer(value.toInt());
-                    },
-                    divisions: max_duration.toInt())),
-            Container(
-              margin: EdgeInsets.only(left: 24, right: 24, bottom: 32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    this._startText,
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                  Text(
-                    this._endText,
-                    textAlign: TextAlign.end,
-                    style: Theme.of(context).textTheme.caption,
-                  )
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 32.0, right: 32.0, bottom: 6.0),
-              child: Text(
-                widget.song.title,
-                style: Theme.of(context).textTheme.title,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-              child: Text(
-                  "${widget.song.artistName} - ${widget.song.albumName}",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.subhead),
-            )
-          ],
-        ),
-        Row(
-          children: <Widget>[
-            Container(
-              width: 56.0,
-              height: 56.0,
-              child: ClipOval(
-                child: FlatButton(
-                  onPressed: () {
-                    if (_isPlaying) {
-                      _pausePlayer();
-                    } else {
-                      if (_playerSubscription == null) {
-                        this.setState(() {
-                          this._isPlaying = true;
-                        });
-                        Timer(Duration(milliseconds: 200), () {
-                          startPlayer(widget.song.previewUrl);
-                        });
-                      } else {
-                        _resumePlayer();
-                      }
-                    }
-                  },
-                  padding: EdgeInsets.all(8.0),
-                  child: Image(
-                    image: _isPlaying
-                        ? AssetImage('res/icons/ic_pause.png')
-                        : AssetImage('res/icons/ic_play.png'),
-                  ),
-                ),
-              ),
-            ),
-          ],
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-        ),
-      ],
-    ));
+        child:_nowPlayingPanel() );
   }
 }

@@ -31,6 +31,15 @@ class Song {
   }
 
   String artworkUrl(int size) {
+    if( this.artworkRawUrl.length==0){
+      return "";
+    }
     return this.artworkRawUrl.replaceAll('{w}x{h}', "${size}x$size");
+  }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return artistName.toString()+" "+title.toString();
   }
 }
