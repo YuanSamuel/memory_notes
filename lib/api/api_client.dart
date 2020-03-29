@@ -10,7 +10,7 @@ import 'package:memorynotes/music_app/song.dart';
 
 Future<SentimentResult> fetchSentimentResult(String text) async {
 
-  String url = 'http://192.168.0.118:8080/api/?input='+text;
+  String url = 'http://192.168.0.120:8080/api/?input='+text;
   print(url);
   Response response = await get(url);
   // sample info available in response
@@ -25,7 +25,7 @@ Future<SentimentResult> fetchSentimentResult(String text) async {
 
 Future<List<SongResult>> fetchSongResult(double sentiment, String mood) async {
 
-  String url = 'http://192.168.0.118:8080/song/?sentiment='+sentiment.toString()+"&"+"mood="+mood;
+  String url = 'http://192.168.0.120:8080/song/?sentiment='+sentiment.toString()+"&"+"mood="+mood;
   Response response = await get(url);
   // sample info available in response
   //int statusCode = response.statusCode;
