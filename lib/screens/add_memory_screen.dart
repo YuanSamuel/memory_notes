@@ -34,6 +34,10 @@ class AddMemoryScreen extends StatefulWidget {
 }
 
 class _AddMemoryScreenState extends State<AddMemoryScreen> {
+  String title;
+  String locality;
+  TextEditingController titleInputController;
+  TextEditingController localityInputController;
   TextEditingController feelingInputController;
   TextEditingController descriptionInputController;
   bool _hasSpeech = false;
@@ -75,9 +79,10 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 Text(
                   cursong.title,
                   style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w400,),
+                    color: Colors.black,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w400,
+                  ),
                   overflow: TextOverflow.clip,
                 ),
                 Text(
@@ -123,7 +128,27 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
 
   void initState() {
     super.initState();
+    title = "";
+    locality = "";
+    if (widget.address == null) {
+      title = "unknown";
+      locality = "unknown";
+    } else {
+      if (widget.address.featureName == null) {
+        title = "unknown";
+      } else {
+        title = widget.address.featureName;
+      }
+      if (widget.address.locality == null) {
+        locality = "unknown";
+      } else {
+        locality = "unknown";
+      }
+    }
+
     initSpeechState();
+    titleInputController = new TextEditingController(text: title);
+    localityInputController = new TextEditingController(text: locality);
     feelingInputController = new TextEditingController();
     descriptionInputController = new TextEditingController();
     flutterSound = FlutterSound();
@@ -306,17 +331,23 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     DocumentReference ref = await Firestore.instance.collection('entries').add({
       "imageUrl": url,
       "uid": user.uid,
-      "description":descriptionInputController.text,
+      "description": descriptionInputController.text,
       "coords":
-          GeoPoint(widget.locationData.latitude, widget.locationData.longitude)
+          GeoPoint(widget.locationData.latitude, widget.locationData.longitude),
+      "title": titleInputController.text,
+      "locality": localityInputController.text,
     });
-    DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
+    DocumentSnapshot snap =
+        await Firestore.instance.collection('users').document(user.uid).get();
     List hold = snap['entries'];
     if (hold == null) {
       hold = new List();
     }
     hold.add(ref.documentID);
-    Firestore.instance.collection('users').document(user.uid).updateData({"entries":hold});
+    Firestore.instance
+        .collection('users')
+        .document(user.uid)
+        .updateData({"entries": hold});
     Navigator.pop(context);
   }
 
@@ -370,9 +401,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                     }
                     cursong = sons[0];
 
-
                     return _nowPlayingPanel();
-
                   } else if (snapshot.hasError) {
                     return Center(child: Text("${snapshot.error}"));
                   }
@@ -401,10 +430,12 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 //title text
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    widget.address.featureName == null ? widget.address.addressLine : widget.address.featureName,
-                    style:
-                        TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold, color: Colors.white),
+                  child: TextField(
+                    controller: titleInputController,
+                    style: TextStyle(
+                        fontSize: 50.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
                 SizedBox(
@@ -412,13 +443,17 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    widget.address.locality,
-                    style:
-                        TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600, color: Colors.white),
+                  child: TextField(
+                    controller: localityInputController,
+                    style: TextStyle(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 25.0,),
+                SizedBox(
+                  height: 25.0,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -426,7 +461,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                         icon: Icon(
                           Icons.add_a_photo,
                           size: 30.0,
-                            color: Colors.white,
+                          color: Colors.white,
                         ),
                         onPressed: () {
                           getImage();
@@ -510,9 +545,15 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                           //text input
                           Row(
                             children: <Widget>[
-                              SizedBox(width: 15.0,),
-                              Container(height: 200.0,
-                                  child: VerticalDivider(color: Colors.black, width: 10.0,)),
+                              SizedBox(
+                                width: 15.0,
+                              ),
+                              Container(
+                                  height: 200.0,
+                                  child: VerticalDivider(
+                                    color: Colors.black,
+                                    width: 10.0,
+                                  )),
                               Container(
                                 margin: EdgeInsets.all(10.0),
                                 height: 200.0,
@@ -543,17 +584,18 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                               ),
                               */
                               //child: Text('Done'),
-                              icon: Icon(Icons.check, color: StyleConstants.backgroundColor,),
+                              icon: Icon(
+                                Icons.check,
+                                color: StyleConstants.backgroundColor,
+                              ),
                               onPressed: () => _submit(context),
                             ),
                           ),
-
                         ],
                       ),
                     ),
                   ),
                 ),
-
               ],
             ),
           ),

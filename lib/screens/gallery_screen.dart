@@ -13,8 +13,7 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
 
-  List<String> locations = ["La Centerra", "Cinco Ranch", "Creech Elementary", "Home"];
-  List<String> locationsImgs = ["assets/images/1.jpg", "assets/images/2.jpg", "assets/images/3.jpg", "assets/images/1.jpg"];
+  List<String> locations;
   List<String> imageUrls;
   List<String> songs = ["I Want it that Way", "Haunt Me", "Dat Stick", "Juicy"];
   List<String> artists = ["Backstreet Boys", "Samsa", "Rich Brian", "Doja Cat"];
@@ -37,21 +36,23 @@ class _GalleryScreenState extends State<GalleryScreen> {
   void initState() {
     super.initState();
     getUserInfo();
+
   }
 
 
 
   getUserInfo() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-
     DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
     uid = user.uid;
     print(uid);
     name = snap["firstName"] + " " + snap["lastName"];
     numEntries = snap["entries"].length;
     imageUrls = new List();
+    locations = new List();
     for (int i = 0; i < numEntries; i++) {
       DocumentSnapshot snap2 = await Firestore.instance.collection('entries').document(snap["entries"][i]).get();
+      locations.add(snap2["title"]);
       imageUrls.add(snap2["imageUrl"]);
     }
 
