@@ -1,3 +1,6 @@
+import 'dart:core';
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:memorynotes/screens/view_memory_screen.dart';
 import 'package:memorynotes/utils/StyleConstants.dart';
@@ -13,7 +16,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   List<String> locations = ["La Centerra", "Cinco Ranch", "Creech Elementary", "Home"];
   List<String> locationsImgs = ["assets/images/1.jpg", "assets/images/2.jpg", "assets/images/3.jpg", "assets/images/1.jpg"];
-  List<String>
   List<String> songs = ["I Want it that Way", "Haunt Me", "Dat Stick", "Juicy"];
   List<String> artists = ["Backstreet Boys", "Samsa", "Rich Brian", "Doja Cat"];
 

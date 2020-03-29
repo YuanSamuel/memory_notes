@@ -297,6 +297,8 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     });
   }
 
+
+
   _submit(BuildContext context) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String url = await FirebaseStorage.instance
@@ -308,7 +310,17 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
       "uid": user.uid,
       "description":descriptionInputController.text,
       "coords":
-          GeoPoint(widget.locationData.latitude, widget.locationData.longitude)
+          GeoPoint(widget.locationData.latitude, widget.locationData.longitude),
+      "songtitle":
+          cursong.title,
+      "songartist":
+          cursong.artistName,
+      "songlink":
+          cursong.link,
+      "songpreviewUrl":
+          cursong.previewUrl,
+      "songArtworkRawUrl":
+          cursong.artworkRawUrl,
     });
     DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
     List hold = snap['entries'];
