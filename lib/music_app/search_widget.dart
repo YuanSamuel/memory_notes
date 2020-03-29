@@ -51,7 +51,8 @@ class SearchWidgetState extends State<SearchWidget>
   }
 
   _performSearch() {
-    final text = _searchTextController.text;
+    print("HELLO FROM THE OTHER SIDE");
+    final text = "Hello";
     if (_search != null && text == _searchTextInProgress) {
       return;
     }
@@ -64,7 +65,7 @@ class SearchWidgetState extends State<SearchWidget>
       return;
     }
 
-    this.setState(() {
+      this.setState(() {
       _search = musicStore.search(text);
       _searchTextInProgress = text;
     });
@@ -129,80 +130,14 @@ class SearchWidgetState extends State<SearchWidget>
                       songs = songs.sublist(0, songs.length);
                     }
 
-                    List<Album>  albums = searchResult.albums;
-                    if (albums.length >= 5) {
-                      albums = albums.sublist(0, 5);
-                    }
-
-                    if (albums.length > 0 && albums.length < 5) {
-                      albums = albums.sublist(0, albums.length);
-                    }
-
-                    List<Artist> artists = searchResult.artists;
-                    if (artists.length > 3) {
-                      artists = artists.sublist(0, 3);
-                    }
 
                     final List<Widget> list = [];
+                    List<Song> sons = [];
 
-                    if (artists != null && artists.isNotEmpty) {
-                      list.add(Padding(
-                          padding:
-                              EdgeInsets.only(top: 16, left: 20, right: 20),
-                          child: Text(
-                            'Artists',
-                            style: Theme.of(context).textTheme.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          )));
-                      list.add(
-                        DividerWidget(
-                          margin: const EdgeInsets.only(
-                              top: 8.0, left: 20.0, right: 20.0),
-                        ),
-                      );
-
-                      artists.forEach((a) {
-                        list.add(
-                          Padding(
-                              padding: EdgeInsets.only(
-                                  top: 16, left: 20, right: 20, bottom: 16),
-                              child: Material(
-                                color: Colors.white,
-                                child: InkWell(
-                                    onTap: () {
-                                      Navigator.of(context, rootNavigator: true)
-                                          .push(CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  ArtistWidget(
-                                                      artistId: a.id,
-                                                      artistName: a.name)));
-                                    },
-                                    child: Text(
-                                      a.name,
-                                      style: Theme.of(context).textTheme.body1,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    )),
-                              )),
-                        );
-                        list.add(
-                          DividerWidget(
-                            margin: const EdgeInsets.only(
-                                top: 0.0, left: 36.0, right: 20.0),
-                          ),
-                        );
-                      });
-                    }
-
-                    if (albums != null && albums.isNotEmpty) {
-                      list.add(Padding(
-                        padding: EdgeInsets.only(top: 16),
-                      ));
-                      list.add(CarouselAlbumWidget(
-                        title: 'Albums',
-                        albums: albums,
-                      ));
+                    for(Song song in songs){
+                      if(song.title.toLowerCase()=='in the mood'){
+                        sons.add(song);
+                      }
                     }
 
                     if (songs != null && songs.isNotEmpty) {
@@ -211,9 +146,10 @@ class SearchWidgetState extends State<SearchWidget>
                       ));
                       list.add(CarouselSongWidget(
                         title: 'Songs',
-                        songs: songs,
+                        songs: sons,
                       ));
                     }
+
 
                     return ListView(
                       children: list,

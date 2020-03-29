@@ -137,19 +137,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     return CupertinoPageScaffold(
         child: ListView(
       children: <Widget>[
-        Padding(
-            padding: EdgeInsets.only(top: 16.0),
-            child: Material(
-              color: Colors.white,
-              child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(
-                    Icons.close,
-                    color: Colors.grey,
-                  )),
-            )),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
