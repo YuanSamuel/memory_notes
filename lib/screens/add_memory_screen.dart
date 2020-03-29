@@ -397,7 +397,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Text(
-                    widget.address.featureName,
+                    widget.address.featureName == null ? widget.address.addressLine : widget.address.featureName,
                     style:
                         TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold),
                   ),
