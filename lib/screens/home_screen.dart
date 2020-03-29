@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var _pageOptions = [
     MapScreen(),
     GalleryScreen(),
-    AddMemoryScreen(),
+    CommunityScreen(),
     ProfileScreen(),
   ];
 

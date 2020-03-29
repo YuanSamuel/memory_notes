@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'add_memory_screen.dart';
+
 class GalleryScreen extends StatefulWidget {
   @override
   _GalleryScreenState createState() => _GalleryScreenState();
@@ -14,15 +16,19 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   int _index = 0;
 
+  _onAddMemory(BuildContext context){
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen()));
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(child: Icon(Icons.add),),
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.add), onPressed: () => _onAddMemory(context),),
       body: Container(
         child: Column(
           children: <Widget>[
-            SizedBox(height: 20.0,),
+            SizedBox(height: 40.0,),
             Text('Your Memories', style: TextStyle(fontSize: 30.0),),
             SizedBox(height: 50.0,),
             Row(
@@ -36,7 +42,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
               ],
             ),
 
-            SizedBox(height: 25.0,),
+            SizedBox(height: 35.0,),
 
             //gallery
             SizedBox(
