@@ -46,11 +46,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
 
                   SizedBox(height: 30.0,),
-
                   Text('Favorite Memories', style: TextStyle(fontSize: 30.0),),
 
                   SizedBox(height: 15.0,),
-
 
                   Expanded(
                     child: Container(
@@ -58,8 +56,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child:GridView.count(
                         primary: false,
                         padding: const EdgeInsets.all(20),
-                        crossAxisSpacing: 20,
-                        mainAxisSpacing: 20,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
                         crossAxisCount: 2,
                         children: <Widget>[
                           Container(

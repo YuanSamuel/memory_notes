@@ -198,7 +198,6 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
           panel: _nowPlayingPanel(),
           minHeight: 60.0,
           maxHeight: 60.0,
-          backdropColor: StyleConstants.backgroundColor,
           body: Scaffold(
           backgroundColor: StyleConstants.backgroundColor,
             appBar: AppBar(
