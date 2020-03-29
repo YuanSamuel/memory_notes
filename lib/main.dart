@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memorynotes/screens/login_page.dart';
+import 'package:memorynotes/screens/onboarding_screen.dart';
 
 
 void main() => runApp(MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(),
+      home: OnboardingScreen(),
     );
   }
 }
