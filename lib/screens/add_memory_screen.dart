@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memorynotes/utils/StyleConstants.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,8 +32,6 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
   String lastError = "";
   String lastStatus = "";
   final SpeechToText speech = SpeechToText();
-
-
 
   Widget _nowPlayingPanel() {
     return Scaffold(
@@ -117,18 +116,6 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     });
 
     await uploadImage();
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot snap =
-        await Firestore.instance.collection('users').document(user.uid).get();
-    String url = await FirebaseStorage.instance
-        .ref()
-        .child("photos/${Path.basename(_image.path)}")
-        .getDownloadURL();
-    List hold = snap.data['entries'];
-    hold.add(url);
-    Firestore.instance.collection('users').document(user.uid).updateData({
-      "entries": hold,
-    });
   }
 
   Future uploadImage() async {
@@ -183,8 +170,24 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
       ),
     );
   }
-  
-  _submit(BuildContext context){
+
+  _submit(BuildContext context) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    String url = await FirebaseStorage.instance
+        .ref()
+        .child("photos/${Path.basename(_image.path)}")
+        .getDownloadURL();
+    DocumentReference ref = await Firestore.instance.collection('entries').add({
+      "imageUrl": url,
+      "uid": user.uid,
+      "description":descriptionInputController.text,
+      "coords":
+          GeoPoint(widget.locationData.latitude, widget.locationData.longitude)
+    });
+    DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
+    List hold = snap['entries'];
+    hold.add(ref.documentID);
+    Firestore.instance.collection('users').document(user.uid).updateData({"entries":hold});
     Navigator.pop(context);
   }
 
@@ -193,190 +196,190 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    return
-      SlidingUpPanel(
-          panel: _nowPlayingPanel(),
-          minHeight: 60.0,
-          maxHeight: 60.0,
-          backdropColor: StyleConstants.backgroundColor,
-          body: Scaffold(
-          backgroundColor: StyleConstants.backgroundColor,
-            appBar: AppBar(
-            leading: BackButton(
-              color: Colors.black,
-            ),
-            backgroundColor: Colors.white,
-            ),
-            body: SingleChildScrollView(
-              child: Container(
-                width: width,
-                height: height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-
-              SizedBox(
-                height: 10,
-              ),
-              //title text
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  'La Centerra',
-                  style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold),
+    return SlidingUpPanel(
+      panel: _nowPlayingPanel(),
+      minHeight: 60.0,
+      maxHeight: 60.0,
+      backdropColor: StyleConstants.backgroundColor,
+      body: Scaffold(
+        backgroundColor: StyleConstants.backgroundColor,
+        appBar: AppBar(
+          leading: BackButton(
+            color: Colors.black,
+          ),
+          backgroundColor: Colors.white,
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            width: width,
+            height: height,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  'Katy, Texas',
-                  style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),
+                //title text
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    'La Centerra',
+                    style:
+                        TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  IconButton(
+                SizedBox(
+                  height: 10.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    'Katy, Texas',
+                    style:
+                        TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                SizedBox(
+                  height: 15.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    IconButton(
+                        icon: Icon(
+                          Icons.add_a_photo,
+                          size: 30.0,
+                        ),
+                        onPressed: () {
+                          getImage();
+                        }),
+                    IconButton(
                       icon: Icon(
-                        Icons.add_a_photo,
+                        Icons.mic,
                         size: 30.0,
                       ),
                       onPressed: () {
-                        getImage();
-                      }),
-                  IconButton(
-                    icon: Icon(
-                      Icons.mic,
-                      size: 30.0,
+                        getRecording();
+                      },
                     ),
-                    onPressed: () {
-                      getRecording();
-                    },
-                  ),
-                  IconButton(
-                      icon: Icon(
-                        Icons.room,
-                        size: 30.0,
-                      ),
-                      onPressed: () {}),
-                ],
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
+                    IconButton(
+                        icon: Icon(
+                          Icons.room,
+                          size: 30.0,
+                        ),
+                        onPressed: () {}),
+                  ],
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
 
-              //bottom card thingy
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
+                //bottom card thingy
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(30.0),
+                        )),
+                    child: ClipRRect(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(30.0),
                         topRight: Radius.circular(30.0),
-                      )),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30.0),
-                      topRight: Radius.circular(30.0),
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        //text input one
-                        Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 15.0,
-                            ),
-                            Container(
-                                height: 50.0,
-                                child: VerticalDivider(
-                                  color: Colors.black,
-                                  width: 10.0,
-                                )),
-                            Container(
-                              margin: EdgeInsets.all(10.0),
-                              height: 50.0,
-                              width: width - 100,
-                              color: Colors.white,
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                    hintText:
-                                        "How does this place make you feel",
-                                    border: InputBorder.none),
-                                controller: feelingInputController,
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        //text input
-                        Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 15.0,
-                            ),
-                            Container(
-                                height: 250.0,
-                                child: VerticalDivider(
-                                  color: Colors.black,
-                                  width: 10.0,
-                                )),
-                            Container(
-                              margin: EdgeInsets.all(10.0),
-                              height: 250.0,
-                              width: width - 100,
-                              color: Colors.white,
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                    hintText:
-                                        "Write a description of this place",
-                                    border: InputBorder.none),
-                                keyboardType: TextInputType.multiline,
-                                controller: descriptionInputController,
-                                maxLines: null,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5.0,
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 25.0),
-                          width: double.infinity,
-                          child: RaisedButton(
-                            padding: EdgeInsets.all(15.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            child: Text('Done'),
-                            onPressed: () => _submit(context),
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 10.0,
                           ),
-                        ),
-                      ],
+                          //text input one
+                          Row(
+                            children: <Widget>[
+                              SizedBox(
+                                width: 15.0,
+                              ),
+                              Container(
+                                  height: 50.0,
+                                  child: VerticalDivider(
+                                    color: Colors.black,
+                                    width: 10.0,
+                                  )),
+                              Container(
+                                margin: EdgeInsets.all(10.0),
+                                height: 50.0,
+                                width: width - 100,
+                                color: Colors.white,
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                      hintText:
+                                          "How does this place make you feel",
+                                      border: InputBorder.none),
+                                  controller: feelingInputController,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          //text input
+                          Row(
+                            children: <Widget>[
+                              SizedBox(
+                                width: 15.0,
+                              ),
+                              Container(
+                                  height: 250.0,
+                                  child: VerticalDivider(
+                                    color: Colors.black,
+                                    width: 10.0,
+                                  )),
+                              Container(
+                                margin: EdgeInsets.all(10.0),
+                                height: 250.0,
+                                width: width - 100,
+                                color: Colors.white,
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                      hintText:
+                                          "Write a description of this place",
+                                      border: InputBorder.none),
+                                  keyboardType: TextInputType.multiline,
+                                  controller: descriptionInputController,
+                                  maxLines: null,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5.0,
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: 25.0),
+                            width: double.infinity,
+                            child: RaisedButton(
+                              padding: EdgeInsets.all(15.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              child: Text('Done'),
+                              onPressed: () => _submit(context),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-          ),
     );
   }
 
@@ -384,24 +387,18 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     print("START LISTENING");
     lastWords = "";
     lastError = "";
-    speech.listen(onResult: resultListener,listenFor: Duration(seconds: 59));
-    setState(() {
-
-    });
+    speech.listen(onResult: resultListener, listenFor: Duration(seconds: 59));
+    setState(() {});
   }
 
   void stopListening() {
     speech.stop();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   void cancelListening() {
     speech.cancel();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   void resultListener(SpeechRecognitionResult result) {

@@ -50,22 +50,29 @@ class _MapScreenState extends State<MapScreen> {
         setState(() {
           number++;
           currentPos = currentLocation;
+          checkSendMessage();
         });
       }
       else {
         currentPos = currentLocation;
+        checkSendMessage();
       }
     });
   }
 
   checkSendMessage() async {
+    print('check');
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
     for (int i = 0; i < snap.data['entries'].length; i++) {
-      print('hi');
-      double dist = await Geolocator().distanceBetween(currentPos.latitude, currentPos.longitude, 0, 0);
-      if (dist < 5){
-        post("https://api.twilio.com/2010-04-01/Accounts/ACd2fc0b0525c64d3aad7ab1e4990df8d3/Messages.json", headers: {'Authorization': authn}, body: {"Body":"8:45","From":"+12512505464","To":"+12816907446"});
+      print(snap.data['entries'][i]);
+      DocumentSnapshot location = await Firestore.instance.collection('entries').document(snap.data['entries'][i]).get();
+      double dist = await Geolocator().distanceBetween(currentPos.latitude, currentPos.longitude, location.data["coords"].latitude, location.data["coords"].longitude);
+      print(dist);
+      if (dist < 15) {
+        Timer(Duration(minutes: 3), () {
+          //post("https://api.twilio.com/2010-04-01/Accounts/ACd2fc0b0525c64d3aad7ab1e4990df8d3/Messages.json", headers: {'Authorization': authn}, body: {"Body":"8:45","From":"+12512505464","To":"+1346857952"});
+        });
       }
 
     }
