@@ -29,55 +29,61 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
   String lastStatus = "";
   final SpeechToText speech = SpeechToText();
 
+  _onAddMemory(BuildContext context){
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen()));
+  }
+
   Widget _nowPlayingPanel() {
-    return Container(
-        //height: 10.0,
-        color: StyleConstants.backgroundColorDark,
-        child: Row(
-          children: <Widget>[
-            //little picture
-            Container(
-              height: 60.0,
-              width: 60.0,
-              child: Image.asset(
-                'assets/images/1.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(
-              width: 10.0,
-            ),
-            //song name and artist
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'I Want it that Way',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w400),
+    return Scaffold(
+      body: Container(
+          //height: 10.0,
+          color: StyleConstants.backgroundColorDark,
+          child: Row(
+            children: <Widget>[
+              //little picture
+              Container(
+                height: 60.0,
+                width: 60.0,
+                child: Image.asset(
+                  'assets/images/1.jpg',
+                  fit: BoxFit.cover,
                 ),
-                Text(
-                  'Backstreet Boys',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.w300),
-                ),
-              ],
-            ),
-            Spacer(),
-            IconButton(
-              icon: Icon(
-                Icons.play_arrow,
-                size: 30.0,
               ),
-              onPressed: () {},
-            ),
-          ],
-        ));
+              SizedBox(
+                width: 10.0,
+              ),
+              //song name and artist
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'I Want it that Way',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  Text(
+                    'Backstreet Boys',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w300),
+                  ),
+                ],
+              ),
+              Spacer(),
+              IconButton(
+                icon: Icon(
+                  Icons.play_arrow,
+                  size: 30.0,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          )),
+    );
   }
 
   File _image;
@@ -182,26 +188,29 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: StyleConstants.backgroundColor,
-      appBar: AppBar(
-        leading: BackButton(
-          color: Colors.black,
-        ),
-        backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: width,
-          height: height,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SlidingUpPanel(
-                  panel: _nowPlayingPanel(),
-                  minHeight: 60.0,
-                  maxHeight: 60.0,
-                  backdropColor: StyleConstants.backgroundColor),
+    return
+      SlidingUpPanel(
+          panel: _nowPlayingPanel(),
+          minHeight: 60.0,
+          maxHeight: 60.0,
+          backdropColor: StyleConstants.backgroundColor,
+          body: Scaffold(
+          backgroundColor: StyleConstants.backgroundColor,
+            floatingActionButton: FloatingActionButton(child: Icon(Icons.add), onPressed: () => _onAddMemory(context),),
+            appBar: AppBar(
+            leading: BackButton(
+              color: Colors.black,
+            ),
+            backgroundColor: Colors.white,
+            ),
+            body: SingleChildScrollView(
+              child: Container(
+                width: width,
+                height: height,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+
               SizedBox(
                 height: 10,
               ),
@@ -363,6 +372,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
           ),
         ),
       ),
+          ),
     );
   }
 

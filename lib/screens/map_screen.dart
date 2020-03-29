@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:memorynotes/screens/add_memory_screen.dart';
+import 'package:memorynotes/screens/home_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:location/location.dart' as lo;
 import 'package:geolocator/geolocator.dart';
@@ -65,6 +67,10 @@ class _MapScreenState extends State<MapScreen> {
 
     }
   }
+
+  void _onAddMemory(BuildContext context){
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen()));
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -76,6 +82,7 @@ class _MapScreenState extends State<MapScreen> {
     }
     else {
       return Scaffold(
+        floatingActionButton: FloatingActionButton(child: Icon(Icons.add), onPressed: ()=> _onAddMemory(context),),
         body: Container(
             child: Container(
                   height: MediaQuery.of(context).size.height,
