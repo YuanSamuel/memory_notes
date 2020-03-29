@@ -313,6 +313,9 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     });
     DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
     List hold = snap['entries'];
+    if (hold == null) {
+      hold = new List();
+    }
     hold.add(ref.documentID);
     Firestore.instance.collection('users').document(user.uid).updateData({"entries":hold});
     Navigator.pop(context);
