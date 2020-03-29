@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memorynotes/screens/add_memory_screen.dart';
 import 'package:memorynotes/screens/home_screen.dart';
+import 'package:memorynotes/screens/view_memory_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:location/location.dart' as lo;
 import 'package:geolocator/geolocator.dart';
@@ -74,6 +75,51 @@ class _MapScreenState extends State<MapScreen> {
   void _onAddMemory(BuildContext context){
     Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen(locationData: currentPos)));
   }
+
+  void _onViewMemory(BuildContext context){
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>ViewMemoryScreen()));
+  }
+
+  void _markerPressed(){
+    showModalBottomSheet(context: context, builder: (context) {
+      return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 10.0),
+              Container(
+                width: 100.0,
+                height: 100.0,
+                child: Image.asset('assets/images/2.jpg', fit: BoxFit.cover,),
+                color: Colors.blue,
+              ),
+              SizedBox(height: 10.0,),
+              Text('La Centerra', style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),),
+              Text('Katy, Texas', style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),),
+
+              SizedBox(height: 20.0,),
+
+              Text('I want it that way', style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),),
+              Text('Backstreet Boys', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w300),),
+
+              SizedBox(height: 20.0,),
+
+              Icon(Icons.play_arrow, size: 40.0,),
+
+              SizedBox(height: 40.0,),
+
+
+              GestureDetector(
+                onTap: () => _onViewMemory(context),
+                  child: Text('More', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w400),))
+
+            ],
+
+          )
+      );
+    });
+  }
+
   
   @override
   Widget build(BuildContext context) {
@@ -94,6 +140,7 @@ class _MapScreenState extends State<MapScreen> {
                     markers: [Marker(
                       markerId: MarkerId("Position"),
                       position: LatLng(currentPos.latitude, currentPos.longitude),
+                      onTap: _markerPressed,
                     )].toSet(),
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
