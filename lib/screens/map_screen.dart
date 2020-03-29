@@ -46,10 +46,12 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> listenLocation() async {
     location.onLocationChanged.listen((lo.LocationData currentLocation) {
       print('changed');
-      setState(() {
-        number++;
-        currentPos = currentLocation;
-      });
+      if (mounted) {
+        setState(() {
+          number++;
+          currentPos = currentLocation;
+        });
+      }
     });
   }
 
