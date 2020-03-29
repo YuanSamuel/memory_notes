@@ -14,7 +14,9 @@ class GalleryScreen extends StatefulWidget {
 class _GalleryScreenState extends State<GalleryScreen> {
 
   List<String> locations;
+  List<String> localities;
   List<String> imageUrls;
+  List<String> descriptions;
   List<String> songs = ["I Want it that Way", "Haunt Me", "Dat Stick", "Juicy"];
   List<String> artists = ["Backstreet Boys", "Samsa", "Rich Brian", "Doja Cat"];
 
@@ -36,7 +38,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
   void initState() {
     super.initState();
     getUserInfo();
-
   }
 
 
@@ -50,10 +51,14 @@ class _GalleryScreenState extends State<GalleryScreen> {
     numEntries = snap["entries"].length;
     imageUrls = new List();
     locations = new List();
+    localities = new List();
+    descriptions = new List();
     for (int i = 0; i < numEntries; i++) {
       DocumentSnapshot snap2 = await Firestore.instance.collection('entries').document(snap["entries"][i]).get();
+      localities.add(snap2["locality"]);
       locations.add(snap2["title"]);
       imageUrls.add(snap2["imageUrl"]);
+      descriptions.add(snap2["description"]);
     }
 
     setState(() {
@@ -103,7 +108,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     return Transform.scale(
                       scale: i == _index ? 1 : 0.9,
                       child: GestureDetector(
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen())),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen(uid: uid, title: locations[i],locality: this.localities[i],imageUrl: this.imageUrls[i], description: this.descriptions[i],))),
                         child: Card(
                           elevation: 6,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

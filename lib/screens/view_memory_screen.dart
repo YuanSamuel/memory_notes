@@ -4,6 +4,12 @@ import 'package:path/path.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ViewMemoryScreen extends StatefulWidget {
+  ViewMemoryScreen({Key key, this.uid, this.title, this.locality, this.imageUrl, this.description}):super(key: key);
+  final String title;
+  final String uid;
+  final String locality;
+  final String imageUrl;
+  final String description;
   @override
   _ViewMemoryScreenState createState() => _ViewMemoryScreenState();
 }
@@ -21,8 +27,8 @@ class _ViewMemoryScreenState extends State<ViewMemoryScreen> {
               Container(
                 height: 60.0,
                 width: 60.0,
-                child: Image.asset(
-                  'assets/images/1.jpg',
+                child: Image(
+                  image: Image.network(widget.imageUrl).image,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -98,7 +104,7 @@ class _ViewMemoryScreenState extends State<ViewMemoryScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
-                      'La Centerra',
+                      widget.title,
                       style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
@@ -108,7 +114,7 @@ class _ViewMemoryScreenState extends State<ViewMemoryScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
-                      'Katy, Texas',
+                      widget.locality,
                       style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                   ),
@@ -196,7 +202,7 @@ class _ViewMemoryScreenState extends State<ViewMemoryScreen> {
                                   width: width - 100,
                                   color: Colors.white,
                                   child: Text(
-                                    'This is my favorite place in the world. I visit here with my family, and it makes me very happy'
+                                    widget.description,
                                   ),
                                 ),
                               ],
