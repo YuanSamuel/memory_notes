@@ -22,9 +22,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
   TextEditingController feelingInputController;
   TextEditingController descriptionInputController;
 
-  _onAddMemory(BuildContext context){
-    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen()));
-  }
+
 
   Widget _nowPlayingPanel() {
     return Scaffold(
@@ -188,6 +186,10 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
       ),
     );
   }
+  
+  _submit(BuildContext context){
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +204,6 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
           backdropColor: StyleConstants.backgroundColor,
           body: Scaffold(
           backgroundColor: StyleConstants.backgroundColor,
-            floatingActionButton: FloatingActionButton(child: Icon(Icons.add), onPressed: () => _onAddMemory(context),),
             appBar: AppBar(
             leading: BackButton(
               color: Colors.black,
@@ -332,14 +333,14 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                               width: 15.0,
                             ),
                             Container(
-                                height: 200.0,
+                                height: 250.0,
                                 child: VerticalDivider(
                                   color: Colors.black,
                                   width: 10.0,
                                 )),
                             Container(
                               margin: EdgeInsets.all(10.0),
-                              height: 200.0,
+                              height: 250.0,
                               width: width - 100,
                               color: Colors.white,
                               child: TextFormField(
@@ -366,7 +367,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                             child: Text('Done'),
-                            onPressed: () {},
+                            onPressed: () => _submit(context),
                           ),
                         ),
                       ],
