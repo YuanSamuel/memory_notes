@@ -64,8 +64,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
       imageUrls.add(snap2["imageUrl"]);
       descriptions.add(snap2["description"]);
       musicartists.add((snap2['songartist']));
-      musictitles.add(snap['songtitle']);
+      musictitles.add(snap2['songtitle']);
     }
+    print(musicartists);
+    print(musictitles);
 
 
     setState(() {
@@ -115,7 +117,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     return Transform.scale(
                       scale: i == _index ? 1 : 0.9,
                       child: GestureDetector(
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen(uid: uid, title: locations[i],locality: this.localities[i],imageUrl: this.imageUrls[i], description: this.descriptions[i],))),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen(uid: uid, title: locations[i],locality: this.localities[i],imageUrl: this.imageUrls[i], description: this.descriptions[i],songartist: this.musicartists[i], songtitle: this.musictitles[i],))),
                         child: Card(
                           elevation: 6,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

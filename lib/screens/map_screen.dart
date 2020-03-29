@@ -93,7 +93,7 @@ class _MapScreenState extends State<MapScreen> {
           print("SEND TEXT");
           Timer(Duration(seconds: 3), () {
             if (location.data["status"] == null || location.data["status"] == 0) {
-              post(
+             /* post(
                   "https://api.twilio.com/2010-04-01/Accounts/ACd2fc0b0525c64d3aad7ab1e4990df8d3/Messages.json",
                   headers: {
                     'Authorization': authn
@@ -103,7 +103,7 @@ class _MapScreenState extends State<MapScreen> {
                     "You just entered a place where you recorded a memory! Open the Memory Notes app to check it out!",
                     "From": "+12512505464",
                     "To": "+13468579528"
-                  });
+                  });*/
             }
           }
           );
