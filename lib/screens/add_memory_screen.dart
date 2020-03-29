@@ -1,3 +1,10 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:math';
+import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart' show DateFormat;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -8,18 +15,30 @@ import 'package:memorynotes/music_app/search.dart';
 import 'package:memorynotes/music_app/song.dart';
 import 'package:memorynotes/utils/StyleConstants.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'dart:math';
-import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart' show DateFormat;
-import 'dart:io';
-import 'dart:async';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:location/location.dart' as lo;
 
 class AddMemoryScreen extends StatefulWidget {
+  AddMemoryScreen({Key key, this.locationData}) : super(key: key);
+  final lo.LocationData locationData;
   @override
   _AddMemoryScreenState createState() => _AddMemoryScreenState();
 }
 
 class _AddMemoryScreenState extends State<AddMemoryScreen> {
+  TextEditingController feelingInputController;
+  TextEditingController descriptionInputController;
+  bool _hasSpeech = false;
+  String lastWords = "";
+  String lastError = "";
+  String lastStatus = "";
+  final SpeechToText speech = SpeechToText();
   int punct = 0;
   double totalscore = 0;
   double scores = 0;
@@ -96,10 +115,14 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
         ));
   }
 
-  @override
+  File _image;
+  FlutterSound flutterSound = new FlutterSound();
+
   void initState() {
     super.initState();
-
+    initSpeechState();
+    feelingInputController = new TextEditingController();
+    descriptionInputController = new TextEditingController();
     flutterSound = FlutterSound();
     flutterSound.setSubscriptionDuration(0.01);
     flutterSound.setDbPeakLevelUpdate(0.8);
@@ -112,9 +135,45 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     initializeDateFormatting();
   }
 
+  Future<void> initSpeechState() async {
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.microphone);
+    print(permission);
+    bool hasSpeech = await speech.initialize(onStatus: statusListener);
+    if (!mounted) return;
+    setState(() {
+      _hasSpeech = hasSpeech;
+    });
+    print('init');
+  }
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _image = image;
+    });
+
+    await uploadImage();
+  }
+
+  Future uploadImage() async {
+    print(Path.basename(_image.path));
+    StorageReference reference = FirebaseStorage.instance
+        .ref()
+        .child("photos/${Path.basename(_image.path)}");
+    StorageUploadTask upload = reference.putFile(_image);
+    await upload.onComplete;
+    print('complete');
+  }
+
+  Future getRecording() async {
+    startListening();
+    print("listening");
+  }
+
   bool _isPlaying = false;
   StreamSubscription _playerSubscription;
-  FlutterSound flutterSound;
 
   String _startText = '00:00';
   String _endText = '00:00';
@@ -235,6 +294,26 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     });
   }
 
+  _submit(BuildContext context) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    String url = await FirebaseStorage.instance
+        .ref()
+        .child("photos/${Path.basename(_image.path)}")
+        .getDownloadURL();
+    DocumentReference ref = await Firestore.instance.collection('entries').add({
+      "imageUrl": url,
+      "uid": user.uid,
+      "description":descriptionInputController.text,
+      "coords":
+          GeoPoint(widget.locationData.latitude, widget.locationData.longitude)
+    });
+    DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
+    List hold = snap['entries'];
+    hold.add(ref.documentID);
+    Firestore.instance.collection('users').document(user.uid).updateData({"entries":hold});
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -305,7 +384,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
         body: SingleChildScrollView(
           child: Container(
             width: width,
-            height: height * 0.9,
+            height: height,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -332,34 +411,37 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                         TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),
                   ),
                 ),
-                SizedBox(
-                  height: 25.0,
-                ),
+                SizedBox(height: 25.0,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        size: 30.0,
-                      ),
-                      onPressed: () {},
-                    ),
+                        icon: Icon(
+                          Icons.add_a_photo,
+                          size: 30.0,
+                        ),
+                        onPressed: () {
+                          getImage();
+                        }),
                     IconButton(
                       icon: Icon(
                         Icons.mic,
                         size: 30.0,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        getRecording();
+                      },
                     ),
                     IconButton(
-                      icon: Icon(
-                        Icons.room,
-                        size: 30.0,
-                      ),
-                      onPressed: () {},
-                    ),
+                        icon: Icon(
+                          Icons.room,
+                          size: 30.0,
+                        ),
+                        onPressed: () {}),
                   ],
+                ),
+                SizedBox(
+                  height: 10.0,
                 ),
                 SizedBox(
                   height: 20.0,
@@ -407,6 +489,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                                       hintText:
                                           "How does this place make you feel",
                                       border: InputBorder.none),
+                                  controller: feelingInputController,
                                   keyboardType: TextInputType.multiline,
                                   maxLines: null,
                                 ),
@@ -417,18 +500,12 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                           //text input
                           Row(
                             children: <Widget>[
-                              SizedBox(
-                                width: 15.0,
-                              ),
-                              Container(
-                                  height: 200.0,
-                                  child: VerticalDivider(
-                                    color: Colors.black,
-                                    width: 10.0,
-                                  )),
+                              SizedBox(width: 15.0,),
+                              Container(height: 200.0,
+                                  child: VerticalDivider(color: Colors.black, width: 10.0,)),
                               Container(
                                 margin: EdgeInsets.all(10.0),
-                                height: 200.0,
+                                height: 250.0,
                                 width: width - 100,
                                 color: Colors.white,
                                 child: TextFormField(
@@ -438,15 +515,13 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                                           "Write a description of this place",
                                       border: InputBorder.none),
                                   keyboardType: TextInputType.multiline,
+                                  controller: descriptionInputController,
                                   maxLines: null,
                                 ),
                               ),
                             ],
                           ),
 
-                          SizedBox(
-                            height: 5.0,
-                          ),
                           Container(
                             padding: EdgeInsets.symmetric(vertical: 25.0),
                             width: double.infinity,
@@ -456,21 +531,53 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                               child: Text('Done'),
-                              onPressed: () {
-                                //TODO Insert Database Insertion Code
-                              },
+                              onPressed: () => _submit(context),
                             ),
                           ),
+
                         ],
                       ),
                     ),
                   ),
                 ),
+
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  void startListening() {
+    print("START LISTENING");
+    lastWords = "";
+    lastError = "";
+    speech.listen(onResult: resultListener, listenFor: Duration(seconds: 59));
+    setState(() {});
+  }
+
+  void stopListening() {
+    speech.stop();
+    setState(() {});
+  }
+
+  void cancelListening() {
+    speech.cancel();
+    setState(() {});
+  }
+
+  void resultListener(SpeechRecognitionResult result) {
+    setState(() {
+      lastWords = "${result.recognizedWords}";
+      descriptionInputController.text = lastWords;
+      print(lastWords);
+    });
+  }
+
+  void statusListener(String status) {
+    setState(() {
+      lastStatus = "$status";
+    });
   }
 }

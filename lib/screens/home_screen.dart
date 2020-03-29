@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:memorynotes/screens/add_memory_screen.dart';
 import 'package:memorynotes/screens/community_screen.dart';
 import 'package:memorynotes/screens/gallery_screen.dart';
 import 'package:memorynotes/screens/map_screen.dart';
@@ -22,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.white,),
+      //appBar: AppBar(backgroundColor: Colors.white,),
       body: _pageOptions[_selectedTab],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -36,12 +37,13 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.blue,
         ),
         child: CurvedNavigationBar(
+          height: MediaQuery.of(context).size.height / 14,
           backgroundColor: Colors.grey[200],
           items: <Widget>[
-            Icon(Icons.calendar_today, size: 30),
-            Icon(Icons.insert_chart, size: 30),
+            Icon(Icons.map, size: 30),
+            Icon(Icons.collections, size: 30),
             Icon(Icons.people, size: 30),
-            Icon(Icons.person_pin, size: 30),
+            Icon(Icons.account_circle, size: 30),
           ],
           onTap: (index) {
             setState(() {
