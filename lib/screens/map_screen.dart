@@ -230,11 +230,11 @@ class _MapScreenState extends State<MapScreen> {
     print('change');
     lo.LocationData set = await location.getLocation();
     print(currentPos);
+    currentPos = set;
     createMarkers();
     var addresses = await Geocoder.local.findAddressesFromCoordinates(new Coordinates(currentPos.latitude, currentPos.longitude));
     setState(() {
       first = addresses.first;
-      currentPos = set;
     });
   }
 }
