@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memorynotes/utils/StyleConstants.dart';
+import 'package:path/path.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ViewMemoryScreen extends StatefulWidget {
@@ -76,10 +77,11 @@ class _ViewMemoryScreenState extends State<ViewMemoryScreen> {
         body: Scaffold(
           backgroundColor: StyleConstants.backgroundColor,
           appBar: AppBar(
+            elevation: 0.0,
             leading: BackButton(
               color: Colors.black,
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: StyleConstants.backgroundColor,
           ),
           body: SingleChildScrollView(
             child: Container(
@@ -97,7 +99,7 @@ class _ViewMemoryScreenState extends State<ViewMemoryScreen> {
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
                       'La Centerra',
-                      style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
                   SizedBox(
@@ -107,7 +109,7 @@ class _ViewMemoryScreenState extends State<ViewMemoryScreen> {
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
                       'Katy, Texas',
-                      style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                   ),
                   SizedBox(

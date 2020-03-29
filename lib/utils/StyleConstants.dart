@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class StyleConstants{
   static TextStyle onboardingText = TextStyle(fontSize: 20.0, color: Colors.white );
 
-  static Color backgroundColor = new Color(0xffF0F4F7);
+  static Color backgroundColor = new Color(0xff9990FD);
 
   static Color backgroundColorDark = new Color(0xffc3c7c9);
 

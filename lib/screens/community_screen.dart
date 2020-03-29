@@ -10,7 +10,7 @@ class CommunityScreen extends StatefulWidget {
 class _CommunityScreenState extends State<CommunityScreen> {
 
 
-  List<String> people = ["John Smith", "Samuel Yuan", "Lucas Cai", "Prasann"];
+  List<String> people = ["John", "Samuel", "Lucas", "Prasann"];
   List<String> peopleImgs = ["assets/images/profilepic.jpg", "assets/images/profilepic.jpg", "assets/images/profilepic.jpg", "assets/images/profilepic.jpg"];
   List<String> songs = ["I Want it that Way", "Haunt Me", "Dat Stick", "Juicy"];
   List<String> artists = ["Backstreet Boys", "Samsa", "Rich Brian", "Doja Cat"];
@@ -51,22 +51,24 @@ class _CommunityScreenState extends State<CommunityScreen> {
                             ),
 
                             Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text(people[index], style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),),
+                              padding: const EdgeInsets.only(left: 15.0),
+                              child: Text(people[index], style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),),
                             ),
 
-                            SizedBox(width: 20.0,),
+                            Spacer(),
 
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                Text('I want it that way', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),),
+
+                                Text('I want it that way', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w400),),
                                 SizedBox(height: 10.0,),
                                 Text('Backstreet Boys'),
                               ],
                             ),
 
+                            SizedBox(width: 10.0,),
                             Icon(Icons.play_arrow),
                           ],
                         )

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memorynotes/screens/add_memory_screen.dart';
-import 'package:memorynotes/screens/home_screen.dart';
 import 'package:memorynotes/screens/login_page.dart';
-import 'package:memorynotes/screens/onboarding_screen.dart';
-import 'package:memorynotes/screens/view_memory_screen.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -18,7 +15,7 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      home: LoginPage(),
     );
   }
 }

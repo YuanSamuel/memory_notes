@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:memorynotes/screens/view_memory_screen.dart';
+import 'package:memorynotes/utils/StyleConstants.dart';
 
 import 'add_memory_screen.dart';
 
@@ -20,12 +22,17 @@ class _GalleryScreenState extends State<GalleryScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen()));
   }
 
+  _onViewMemory(BuildContext context){
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen()));
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(child: Icon(Icons.add), onPressed: () => _onAddMemory(context),),
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.add), onPressed: () => _onAddMemory(context), backgroundColor: StyleConstants.backgroundColor),
       body: Container(
+        //color: StyleConstants.backgroundColor,
         child: Column(
           children: <Widget>[
             SizedBox(height: 40.0,),
@@ -55,59 +62,62 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 itemBuilder: (_, i) {
                   return Transform.scale(
                     scale: i == _index ? 1 : 0.9,
-                    child: Card(
-                      elevation: 6,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                              height: 350,
-                              width: 300,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20.0),
-                                  child: Image.asset(locationsImgs[i],
-                                    fit: BoxFit.cover,)
-                              )
-                          ),
-                          Positioned(
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 20.0),
-                                child: Text(
-                                  locations[i],
-                                  style: TextStyle(fontSize: 32, color: Colors.white),
-                                  textAlign: TextAlign.center,
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen())),
+                      child: Card(
+                        elevation: 6,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        child: Stack(
+                          children: <Widget>[
+                            Container(
+                                height: 350,
+                                width: 300,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                    child: Image.asset(locationsImgs[i],
+                                      fit: BoxFit.cover,)
+                                )
+                            ),
+                            Positioned(
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 20.0),
+                                  child: Text(
+                                    locations[i],
+                                    style: TextStyle(fontSize: 32, color: Colors.white),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Center(
-                            child: Icon(Icons.play_arrow, size: 100.0, color: Colors.white,),
-                          ),
-                          Positioned(
-                            bottom: 30,
-                            left: 10,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  songs[i],
-                                  style: TextStyle(fontSize: 25, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-
-                                Text(
-                                  artists[i],
-                                  style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w200),
-                                  textAlign: TextAlign.center,
-                                ),
-
-                              ],
+                            Center(
+                              child: Icon(Icons.play_arrow, size: 100.0, color: Colors.white,),
                             ),
-                          )
-                        ],
+                            Positioned(
+                              bottom: 30,
+                              left: 10,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    songs[i],
+                                    style: TextStyle(fontSize: 25, color: Colors.white),
+                                    textAlign: TextAlign.center,
+                                  ),
+
+                                  Text(
+                                    artists[i],
+                                    style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w200),
+                                    textAlign: TextAlign.center,
+                                  ),
+
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );
