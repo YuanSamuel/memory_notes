@@ -38,10 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CurvedNavigationBar(
           backgroundColor: Colors.grey[200],
           items: <Widget>[
-            Icon(Icons.calendar_today, size: 30),
-            Icon(Icons.insert_chart, size: 30),
+            Icon(Icons.map, size: 30),
+            Icon(Icons.collections, size: 30),
             Icon(Icons.people, size: 30),
-            Icon(Icons.person_pin, size: 30),
+            Icon(Icons.account_circle, size: 30),
           ],
           onTap: (index) {
             setState(() {
