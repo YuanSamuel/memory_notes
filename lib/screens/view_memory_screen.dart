@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memorynotes/utils/StyleConstants.dart';
-import 'package:path/path.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ViewMemoryScreen extends StatefulWidget {

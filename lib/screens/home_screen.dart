@@ -16,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
   var _pageOptions = [
     MapScreen(),
     GalleryScreen(),
-    CommunityScreen(),
     ProfileScreen(),
   ];
 
@@ -42,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
           items: <Widget>[
             Icon(Icons.map, size: 30),
             Icon(Icons.collections, size: 30),
-            Icon(Icons.people, size: 30),
             Icon(Icons.account_circle, size: 30),
           ],
           onTap: (index) {
