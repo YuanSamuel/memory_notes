@@ -23,10 +23,12 @@ import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:location/location.dart' as lo;
+import 'package:geocoder/geocoder.dart';
 
 class AddMemoryScreen extends StatefulWidget {
-  AddMemoryScreen({Key key, this.locationData}) : super(key: key);
+  AddMemoryScreen({Key key, this.locationData, this.address}) : super(key: key);
   final lo.LocationData locationData;
+  final Address address;
   @override
   _AddMemoryScreenState createState() => _AddMemoryScreenState();
 }
@@ -310,6 +312,9 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     });
     DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
     List hold = snap['entries'];
+    if (hold == null) {
+      hold = new List();
+    }
     hold.add(ref.documentID);
     Firestore.instance.collection('users').document(user.uid).updateData({"entries":hold});
     Navigator.pop(context);
@@ -397,7 +402,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Text(
-                    'La Centerra',
+                    widget.address.featureName == null ? widget.address.addressLine : widget.address.featureName,
                     style:
                         TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
@@ -408,7 +413,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Text(
-                    'Katy, Texas',
+                    widget.address.locality,
                     style:
                         TextStyle(fontSize: 30.0, fontWeight: FontWeight.w600, color: Colors.white),
                   ),
