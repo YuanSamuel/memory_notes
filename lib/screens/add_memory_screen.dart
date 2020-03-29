@@ -14,8 +14,11 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:location/location.dart' as lo;
 
 class AddMemoryScreen extends StatefulWidget {
+  AddMemoryScreen({Key key, this.locationData}) : super(key: key);
+  final lo.LocationData locationData;
   @override
   _AddMemoryScreenState createState() => _AddMemoryScreenState();
 }

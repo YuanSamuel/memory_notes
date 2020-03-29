@@ -52,6 +52,9 @@ class _MapScreenState extends State<MapScreen> {
           currentPos = currentLocation;
         });
       }
+      else {
+        currentPos = currentLocation;
+      }
     });
   }
 
@@ -69,7 +72,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onAddMemory(BuildContext context){
-    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen()));
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMemoryScreen(locationData: currentPos)));
   }
   
   @override
