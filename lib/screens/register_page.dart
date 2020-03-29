@@ -20,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController lastNameInputController;
   TextEditingController emailInputController;
   TextEditingController passwordInputController;
+  TextEditingController phoneNumberInputController;
 
   @override
   void initState() {
@@ -28,6 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
     lastNameInputController = new TextEditingController();
     emailInputController = new TextEditingController();
     passwordInputController = new TextEditingController();
+    phoneNumberInputController = new TextEditingController();
   }
 
   String emailValidator(String value) {
@@ -190,6 +192,36 @@ class _RegisterPageState extends State<RegisterPage> {
                       )
                     ),
                   ),
+                  SizedBox(height: MediaQuery.of(context).size.height / 20,),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelText: "Phone Number",
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    controller: phoneNumberInputController,
+                    validator: (value) {
+
+                    },
+                  )
                 ],
               ),
               RaisedButton(
@@ -204,17 +236,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   if (_registerFormKey.currentState.validate()) {
                     FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailInputController.text, password: passwordInputController.text).then(
                         (currentUser) {
-                          Firestore.instance.collection('users').document(currentUser.user.uid).setData({"uid": currentUser.user.uid,
+                          Firestore.instance.collection('users').document(currentUser.user.uid).setData({
+                            "uid": currentUser.user.uid,
                             "firstName": firstNameInputController.text,
                             "lastName": lastNameInputController.text,
                             "email": emailInputController.text,
+                            "phoneNumber": phoneNumberInputController.text,
                           });
                         }
                     );
-                    firstNameInputController.clear();
-                    lastNameInputController.clear();
-                    emailInputController.clear();
-                    passwordInputController.clear();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => HomeScreen()),

@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:memorynotes/screens/add_memory_screen.dart';
 import 'package:memorynotes/screens/community_screen.dart';
 import 'package:memorynotes/screens/gallery_screen.dart';
 import 'package:memorynotes/screens/map_screen.dart';
@@ -15,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var _pageOptions = [
     MapScreen(),
     GalleryScreen(),
-    CommunityScreen(),
+    AddMemoryScreen(),
     ProfileScreen(),
   ];
 
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.blue,
         ),
         child: CurvedNavigationBar(
+          height: MediaQuery.of(context).size.height / 14,
           backgroundColor: Colors.grey[200],
           items: <Widget>[
             Icon(Icons.map, size: 30),
