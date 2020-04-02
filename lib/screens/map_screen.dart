@@ -23,6 +23,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   static String uname;
   static String pword;
+  static String sendNum;
   var authn;
   bool sent;
 
@@ -49,8 +50,8 @@ class _MapScreenState extends State<MapScreen> {
     String s = await DefaultAssetBundle.of(context).loadString("assets/keys.json");
     var keys = json.decode(s);
     uname = keys["twilioSID"];
-    print("UNAME:" +uname);
     pword = keys["twilioAuth"];
+    sendNum = keys["phoneNum"];
     authn = 'Basic ' + base64Encode(utf8.encode('$uname:$pword'));
   }
 
@@ -109,7 +110,7 @@ class _MapScreenState extends State<MapScreen> {
               body: {
                 "Body":
                     "You just entered a place where you recorded a memory! Open the Memory Notes app to check it out!",
-                "From": "+12512505464",
+                "From": sendNum,
                 "To": snap["phoneNumber"].toString(),
               });
           Firestore.instance
