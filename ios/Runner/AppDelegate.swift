@@ -2,6 +2,7 @@ import UIKit
 import Flutter
 import GoogleMaps
 
+
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
@@ -9,7 +10,16 @@ import GoogleMaps
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
-    GMSServices.provideAPIKey("AIzaSyDG9oquQaYlLd8Wn49QvdeQunYQRsO9H5k")
+    var keys: NSDictionary?
+    if let path = Bundle.main.path(forResource: "ApiKeys", ofType: "plist") {
+        keys = NSDictionary(contentsOfFile: path)
+    }
+    if let dict = keys {
+        let clientKey = dict["GoogleMapsKey"] as? String
+
+        // Initialize Parse.
+        GMSServices.provideAPIKey(clientKey!)
+    }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

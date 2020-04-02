@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class MapScreen extends StatefulWidget {
   @override
@@ -20,9 +21,9 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  static String uname = 'ACd2fc0b0525c64d3aad7ab1e4990df8d3';
-  static String pword = '53cacf2f6d17a96a1b14acb0c2f22fee';
-  var authn = 'Basic ' + base64Encode(utf8.encode('$uname:$pword'));
+  static String uname;
+  static String pword;
+  var authn;
   bool sent;
 
   List<Marker> allMarkers = new List<Marker>();
@@ -42,6 +43,15 @@ class _MapScreenState extends State<MapScreen> {
     startPosStream();
     listenLocation();
     super.initState();
+  }
+
+  Future<String> loadAsset() async {
+    String s = await DefaultAssetBundle.of(context).loadString("assets/keys.json");
+    var keys = json.decode(s);
+    uname = keys["twilioSID"];
+    print("UNAME:" +uname);
+    pword = keys["twilioAuth"];
+    authn = 'Basic ' + base64Encode(utf8.encode('$uname:$pword'));
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -67,6 +77,7 @@ class _MapScreenState extends State<MapScreen> {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     DocumentSnapshot snap =
         await Firestore.instance.collection('users').document(user.uid).get();
+    print(user.uid);
     for (int i = 0; i < snap.data['entries'].length; i++) {
       DocumentSnapshot location = await Firestore.instance
           .collection('entries')
@@ -79,16 +90,19 @@ class _MapScreenState extends State<MapScreen> {
           currentPos.longitude,
           location.data["coords"].latitude,
           location.data["coords"].longitude);
-      if (dist < 25) {
+      print('SENT:'+ sent.toString());
+      print(location.data["status"]);
+      if (dist < 1) {
         if (sent) {
+          print("ALREADY SENT");
           Firestore.instance
               .collection('entries')
               .document(snap.data['entries'][i])
               .updateData({"status": 1});
-        } else if (location.data["status"] == null ||
-            location.data["status"] == 0) {
+        } else if (location.data["status"] == '0' || location.data["status"] == null) {
+          print("HERE");
           post(
-              "https://api.twilio.com/2010-04-01/Accounts/ACd2fc0b0525c64d3aad7ab1e4990df8d3/Messages.json",
+              "https://api.twilio.com/2010-04-01/Accounts/"+uname+"/Messages.json",
               headers: {
                 'Authorization': authn
               },
@@ -96,7 +110,7 @@ class _MapScreenState extends State<MapScreen> {
                 "Body":
                     "You just entered a place where you recorded a memory! Open the Memory Notes app to check it out!",
                 "From": "+12512505464",
-                "To": user.phoneNumber,
+                "To": snap["phoneNumber"].toString(),
               });
           Firestore.instance
               .collection('entries')
@@ -106,7 +120,7 @@ class _MapScreenState extends State<MapScreen> {
         }
       } else {
         if (location.data["status"] == 1) {
-          Timer(Duration(minutes: 15), () {
+          Timer(Duration(seconds: 30), () {
             Firestore.instance
                 .collection('entries')
                 .document(snap.data['entries'][i])
@@ -303,6 +317,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   startPosStream() async {
+    loadAsset();
     PermissionStatus permission = await PermissionHandler()
         .checkPermissionStatus(PermissionGroup.locationAlways);
     if (permission != PermissionStatus.granted) {
