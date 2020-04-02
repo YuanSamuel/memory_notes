@@ -322,7 +322,10 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     });
   }
 
+
+
   _submit(BuildContext context) async {
+    print("Starting to submit");
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String url = await FirebaseStorage.instance
         .ref()
@@ -336,6 +339,17 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
           GeoPoint(widget.locationData.latitude, widget.locationData.longitude),
       "title": titleInputController.text,
       "locality": localityInputController.text,
+      "songtitle":
+      cursong.title,
+      "songartist":
+      cursong.artistName,
+      "songlink":
+      cursong.link,
+      "songpreviewUrl":
+      cursong.previewUrl,
+      "songArtworkRawUrl":
+      cursong.artworkRawUrl,
+
     });
     DocumentSnapshot snap =
         await Firestore.instance.collection('users').document(user.uid).get();
@@ -549,14 +563,14 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                                 width: 15.0,
                               ),
                               Container(
-                                  height: 200.0,
+                                  height: 160.0,
                                   child: VerticalDivider(
                                     color: Colors.black,
                                     width: 10.0,
                                   )),
                               Container(
                                 margin: EdgeInsets.all(10.0),
-                                height: 200.0,
+                                height: 160.0,
                                 width: width - 100,
                                 color: Colors.white,
                                 child: TextFormField(
@@ -576,20 +590,14 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                           Container(
                             padding: EdgeInsets.symmetric(vertical: 25.0),
                             width: double.infinity,
-                            child: IconButton(
-                              /*
+                            child: FlatButton(
                               padding: EdgeInsets.all(15.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
-                              */
-                              //child: Text('Done'),
-                              icon: Icon(
-                                Icons.check,
-                                color: StyleConstants.backgroundColor,
-                              ),
+                              child: Text('Done'),
                               onPressed: () => _submit(context),
-                            ),
+                            )
                           ),
                         ],
                       ),

@@ -150,7 +150,7 @@ class _MapScreenState extends State<MapScreen> {
         context, MaterialPageRoute(builder: (_) => ViewMemoryScreen()));
   }
 
-  void _markerPressed(String title, String locality, String url) {
+  void _markerPressed(String title, String locality, String url, String songtitle, String songartist) {
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -185,11 +185,11 @@ class _MapScreenState extends State<MapScreen> {
                 height: 20.0,
               ),
               Text(
-                'I want it that way',
+                songtitle,
                 style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
               ),
               Text(
-                'Backstreet Boys',
+                songartist,
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w300),
               ),
               SizedBox(
@@ -294,7 +294,7 @@ class _MapScreenState extends State<MapScreen> {
             location.data["coords"].longitude),
         onTap: () {
           _markerPressed(location.data["title"], location.data["locality"],
-              location.data["imageUrl"]);
+              location.data["imageUrl"], location.data["songartist"], location.data["songtitle"]);
         },
       ));
     }
@@ -310,7 +310,7 @@ class _MapScreenState extends State<MapScreen> {
       position: LatLng(currentPos.latitude, currentPos.longitude),
       onTap: () {
         _markerPressed("Current Location",
-            "[${currentPos.latitude},${currentPos.longitude}]", null);
+            "[${currentPos.latitude},${currentPos.longitude}]", null, "None Available", "None Available");
       },
       icon: icon,
     ));

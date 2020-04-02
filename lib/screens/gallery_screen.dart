@@ -16,6 +16,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
   List<String> locations;
   List<String> localities;
   List<String> imageUrls;
+  List<String> musictitles;
+  List<String> musicartists;
   List<String> descriptions;
   List<String> songs = ["I Want it that Way", "Haunt Me", "Dat Stick", "Juicy"];
   List<String> artists = ["Backstreet Boys", "Samsa", "Rich Brian", "Doja Cat"];
@@ -51,6 +53,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
     numEntries = snap["entries"].length;
     imageUrls = new List();
     locations = new List();
+    musictitles = new List();
+    musicartists = new List();
     localities = new List();
     descriptions = new List();
     for (int i = 0; i < numEntries; i++) {
@@ -59,7 +63,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
       locations.add(snap2["title"]);
       imageUrls.add(snap2["imageUrl"]);
       descriptions.add(snap2["description"]);
+      musicartists.add((snap2['songartist']));
+      musictitles.add(snap2['songtitle']);
     }
+    print(musicartists);
+    print(musictitles);
+
 
     setState(() {
 
@@ -108,7 +117,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     return Transform.scale(
                       scale: i == _index ? 1 : 0.9,
                       child: GestureDetector(
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen(uid: uid, title: locations[i],locality: this.localities[i],imageUrl: this.imageUrls[i], description: this.descriptions[i],))),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewMemoryScreen(uid: uid, title: locations[i],locality: this.localities[i],imageUrl: this.imageUrls[i], description: this.descriptions[i],songartist: this.musicartists[i], songtitle: this.musictitles[i],))),
                         child: Card(
                           elevation: 6,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -147,13 +156,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      songs[i],
+                                      musictitles[i],
                                       style: TextStyle(fontSize: 25, color: Colors.white),
                                       textAlign: TextAlign.center,
                                     ),
 
                                     Text(
-                                      artists[i],
+                                      musicartists[i],
                                       style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w200),
                                       textAlign: TextAlign.center,
                                     ),
