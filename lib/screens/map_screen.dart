@@ -29,7 +29,7 @@ class _MapScreenState extends State<MapScreen> {
 
   List<Marker> allMarkers = new List<Marker>();
 
-  Completer<GoogleMapController> mapController;
+  Completer<GoogleMapController> mapController = Completer();
   bl.Location currentPos;
   bl.Location location = new bl.Location();
   Address first;
@@ -55,16 +55,20 @@ class _MapScreenState extends State<MapScreen> {
     authn = 'Basic ' + base64Encode(utf8.encode('$uname:$pword'));
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController.complete(controller);
-  }
-
   Future<void> listenLocation() async {
     loadAsset();
 
     await Permission.locationAlways.request();
+
+    Position position = await Geolocator.getCurrentPosition();
+    setState(() {
+      currentPos = bl.Location(latitude: position.latitude, longitude: position.longitude);
+    });
+    createMarkers();
+
     bl.BackgroundLocation.getLocationUpdates((bl.Location currentLocation) async {
       currentPos = currentLocation;
+      createMarkers();
       print('Changed: ' + currentLocation.latitude.toString() + ', ' + currentLocation.longitude.toString());
       var addresses = await Geocoder.local.findAddressesFromCoordinates(
           new Coordinates(currentPos.latitude, currentPos.longitude));
@@ -248,7 +252,9 @@ class _MapScreenState extends State<MapScreen> {
             child: GoogleMap(
               mapType: MapType.satellite,
               markers: allMarkers.toSet(),
-              onMapCreated: _onMapCreated,
+              onMapCreated: (GoogleMapController controller) {
+                mapController.complete(controller);
+              },
               initialCameraPosition: CameraPosition(
                   target: LatLng(currentPos.latitude, currentPos.longitude),
                   zoom: 17.0),
@@ -289,8 +295,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   createMarkers() async {
+    print('create');
     allMarkers.clear();
-    User user = await FirebaseAuth.instance.currentUser;
+    User user = FirebaseAuth.instance.currentUser;
     DocumentSnapshot snap =
         await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
     for (int i = 0; i < snap.data()['entries'].length; i++) {
@@ -336,5 +343,8 @@ class _MapScreenState extends State<MapScreen> {
       },
       icon: icon,
     ));
+    setState(() {
+
+    });
   }
 }
