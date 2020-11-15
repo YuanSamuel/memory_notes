@@ -45,8 +45,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
 
   getUserInfo() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
+    User user = FirebaseAuth.instance.currentUser;
+    DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
     uid = user.uid;
     print(uid);
     name = snap["firstName"] + " " + snap["lastName"];
@@ -58,7 +58,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     localities = new List();
     descriptions = new List();
     for (int i = 0; i < numEntries; i++) {
-      DocumentSnapshot snap2 = await Firestore.instance.collection('entries').document(snap["entries"][i]).get();
+      DocumentSnapshot snap2 = await FirebaseFirestore.instance.collection('entries').doc(snap["entries"][i]).get();
       localities.add(snap2["locality"]);
       locations.add(snap2["title"]);
       imageUrls.add(snap2["imageUrl"]);

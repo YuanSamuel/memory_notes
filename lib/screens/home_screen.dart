@@ -1,3 +1,4 @@
+import 'package:background_location/background_location.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:memorynotes/screens/add_memory_screen.dart';
@@ -21,6 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    BackgroundLocation.startLocationService();
+
     return Scaffold(
       //appBar: AppBar(backgroundColor: Colors.white,),
       body: _pageOptions[_selectedTab],

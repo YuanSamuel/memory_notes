@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:background_location/background_location.dart' as bl;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,7 +9,6 @@ import 'package:memorynotes/screens/add_memory_screen.dart';
 import 'package:memorynotes/screens/home_screen.dart';
 import 'package:memorynotes/screens/view_memory_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:location/location.dart' as lo;
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
@@ -29,9 +29,9 @@ class _MapScreenState extends State<MapScreen> {
 
   List<Marker> allMarkers = new List<Marker>();
 
-  GoogleMapController mapController;
-  lo.LocationData currentPos;
-  lo.Location location = new lo.Location();
+  Completer<GoogleMapController> mapController;
+  bl.Location currentPos;
+  bl.Location location = new bl.Location();
   Address first;
   String phoneNumber;
 
@@ -41,13 +41,13 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     sent = false;
-    startPosStream();
     listenLocation();
     super.initState();
   }
 
   Future<String> loadAsset() async {
-    String s = await DefaultAssetBundle.of(context).loadString("assets/keys.json");
+    String s =
+        await DefaultAssetBundle.of(context).loadString("assets/keys.json");
     var keys = json.decode(s);
     uname = keys["twilioSID"];
     pword = keys["twilioAuth"];
@@ -56,54 +56,68 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+    mapController.complete(controller);
   }
 
   Future<void> listenLocation() async {
-    location.onLocationChanged.listen((lo.LocationData currentLocation) {
+    loadAsset();
+
+    await Permission.locationAlways.request();
+    bl.BackgroundLocation.getLocationUpdates((bl.Location currentLocation) async {
+      currentPos = currentLocation;
+      print('Changed: ' + currentLocation.latitude.toString() + ', ' + currentLocation.longitude.toString());
+      var addresses = await Geocoder.local.findAddressesFromCoordinates(
+          new Coordinates(currentPos.latitude, currentPos.longitude));
       if (mounted) {
         setState(() {
           number++;
           currentPos = currentLocation;
+          first = addresses.first;
           checkSendMessage();
         });
       } else {
         currentPos = currentLocation;
+        first = addresses.first;
         checkSendMessage();
       }
     });
   }
 
   checkSendMessage() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    User user = FirebaseAuth.instance.currentUser;
     DocumentSnapshot snap =
-        await Firestore.instance.collection('users').document(user.uid).get();
-    print(user.uid);
-    for (int i = 0; i < snap.data['entries'].length; i++) {
-      DocumentSnapshot location = await Firestore.instance
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    //print(user.uid);
+    for (int i = 0; i < snap.data()['entries'].length; i++) {
+      DocumentSnapshot location = await FirebaseFirestore.instance
           .collection('entries')
-          .document(snap.data['entries'][i])
+          .doc(snap.data()['entries'][i])
           .get();
-      print("SEE LOCATION " + location.documentID);
-      print("SEE LOCATION " + location.data.toString());
-      double dist = await Geolocator().distanceBetween(
+      //print("SEE LOCATION " + location.id);
+      //print("SEE LOCATION " + location.data().toString());
+      double dist = Geolocator.distanceBetween(
           currentPos.latitude,
           currentPos.longitude,
-          location.data["coords"].latitude,
-          location.data["coords"].longitude);
-      print('SENT:'+ sent.toString());
-      print(location.data["status"]);
-      if (dist < 1) {
+          location.data()["coords"].latitude,
+          location.data()["coords"].longitude);
+      //print('SENT:' + sent.toString());
+      print(location.data()["status"]);
+      print('Distance: ' + dist.toString());
+      if (dist < 50) {
+        print('hello?');
         if (sent) {
           print("ALREADY SENT");
-          Firestore.instance
+          FirebaseFirestore.instance
               .collection('entries')
-              .document(snap.data['entries'][i])
-              .updateData({"status": 1});
-        } else if (location.data["status"] == '0' || location.data["status"] == null) {
+              .doc(snap.data()['entries'][i])
+              .update({"status": 1});
+        } else if (location.data()["status"] == 0 ||
+            location.data()["status"] == null) {
           print("HERE");
           post(
-              "https://api.twilio.com/2010-04-01/Accounts/"+uname+"/Messages.json",
+              "https://api.twilio.com/2010-04-01/Accounts/" +
+                  uname +
+                  "/Messages.json",
               headers: {
                 'Authorization': authn
               },
@@ -113,20 +127,18 @@ class _MapScreenState extends State<MapScreen> {
                 "From": sendNum,
                 "To": snap["phoneNumber"].toString(),
               });
-          Firestore.instance
+          FirebaseFirestore.instance
               .collection('entries')
-              .document(snap.data['entries'][i])
-              .updateData({"status": 1});
+              .doc(snap.data()['entries'][i])
+              .update({"status": 1});
           sent = true;
         }
       } else {
-        if (location.data["status"] == 1) {
-          Timer(Duration(seconds: 30), () {
-            Firestore.instance
-                .collection('entries')
-                .document(snap.data['entries'][i])
-                .updateData({"status": 0});
-          });
+        if (location.data()["status"] == 1) {
+          FirebaseFirestore.instance
+              .collection('entries')
+              .doc(snap.data()['entries'][i])
+              .update({"status": 0});
         }
       }
     }
@@ -151,7 +163,8 @@ class _MapScreenState extends State<MapScreen> {
         context, MaterialPageRoute(builder: (_) => ViewMemoryScreen()));
   }
 
-  void _markerPressed(String title, String locality, String url, String songtitle, String songartist) {
+  void _markerPressed(String title, String locality, String url,
+      String songtitle, String songartist) {
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -186,11 +199,11 @@ class _MapScreenState extends State<MapScreen> {
                 height: 20.0,
               ),
               Text(
-                songtitle,
+                songtitle ?? 'No song title',
                 style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
               ),
               Text(
-                songartist,
+                songartist ?? 'No song artist',
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w300),
               ),
               SizedBox(
@@ -277,25 +290,29 @@ class _MapScreenState extends State<MapScreen> {
 
   createMarkers() async {
     allMarkers.clear();
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    User user = await FirebaseAuth.instance.currentUser;
     DocumentSnapshot snap =
-        await Firestore.instance.collection('users').document(user.uid).get();
-    for (int i = 0; i < snap.data['entries'].length; i++) {
-      DocumentSnapshot location = await Firestore.instance
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    for (int i = 0; i < snap.data()['entries'].length; i++) {
+      DocumentSnapshot location = await FirebaseFirestore.instance
           .collection('entries')
-          .document(snap.data['entries'][i])
+          .doc(snap.data()['entries'][i])
           .get();
       allMarkers.add(new Marker(
-        markerId: MarkerId(((location.data["description"].hashCode +
-                    location.data["coords"].latitude +
-                    location.data["coords"].longitude) *
+        markerId: MarkerId(((location.data()["description"].hashCode +
+                    location.data()["coords"].latitude +
+                    location.data()["coords"].longitude) *
                 Random().nextInt(20))
             .toString()),
-        position: LatLng(location.data["coords"].latitude,
-            location.data["coords"].longitude),
+        position: LatLng(location.data()["coords"].latitude,
+            location.data()["coords"].longitude),
         onTap: () {
-          _markerPressed(location.data["title"], location.data["locality"],
-              location.data["imageUrl"], location.data["songartist"], location.data["songtitle"]);
+          _markerPressed(
+              location.data()["title"],
+              location.data()["locality"],
+              location.data()["imageUrl"],
+              location.data()["songartist"],
+              location.data()["songtitle"]);
         },
       ));
     }
@@ -310,28 +327,14 @@ class _MapScreenState extends State<MapScreen> {
               .toString()),
       position: LatLng(currentPos.latitude, currentPos.longitude),
       onTap: () {
-        _markerPressed("Current Location",
-            "[${currentPos.latitude},${currentPos.longitude}]", null, "None Available", "None Available");
+        _markerPressed(
+            "Current Location",
+            "[${currentPos.latitude},${currentPos.longitude}]",
+            null,
+            "None Available",
+            "None Available");
       },
       icon: icon,
     ));
-  }
-
-  startPosStream() async {
-    loadAsset();
-    PermissionStatus permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.locationAlways);
-    if (permission != PermissionStatus.granted) {
-      await PermissionHandler()
-          .requestPermissions([PermissionGroup.locationAlways]);
-    }
-    lo.LocationData set = await location.getLocation();
-    currentPos = set;
-    createMarkers();
-    var addresses = await Geocoder.local.findAddressesFromCoordinates(
-        new Coordinates(currentPos.latitude, currentPos.longitude));
-    setState(() {
-      first = addresses.first;
-    });
   }
 }

@@ -24,9 +24,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   getUserInfo() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    User user = FirebaseAuth.instance.currentUser;
 
-    DocumentSnapshot snap = await Firestore.instance.collection('users').document(user.uid).get();
+    DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
     setState(() {
       uid = user.uid;
@@ -151,6 +151,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   SizedBox(height: 20.0,)
                                 ],
                               ),
+                            ),
+
+                            TextButton(
+                              onPressed: () {
+                                FirebaseAuth.instance.signOut();
+                              },
                             )
 
                           ],

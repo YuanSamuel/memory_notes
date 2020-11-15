@@ -22,12 +22,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:location/location.dart' as lo;
 import 'package:geocoder/geocoder.dart';
+import 'package:background_location/background_location.dart' as bl;
 
 class AddMemoryScreen extends StatefulWidget {
   AddMemoryScreen({Key key, this.locationData, this.address}) : super(key: key);
-  final lo.LocationData locationData;
+  final bl.Location locationData;
   final Address address;
   @override
   _AddMemoryScreenState createState() => _AddMemoryScreenState();
@@ -50,81 +50,82 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
   double scores = 0;
   String mood = "";
   SongResult nowsong;
-  Song cursong;
+  Track cursong;
 
   Widget _nowPlayingPanel() {
-    print(cursong);
-    return Container(
-        //height: 10.0,
-        color: StyleConstants.backgroundColorDark,
-        child: Row(
-          children: <Widget>[
-            //little picture
-            Container(
-              height: 60.0,
-              width: 60.0,
-              child: Image.network(
-                cursong.artworkUrl(512),
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(
-              width: 10.0,
-            ),
-            //song name and artist
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  cursong.title,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  overflow: TextOverflow.clip,
-                ),
-                Text(
-                  cursong.artistName,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.w300),
-                ),
-              ],
-            ),
-            Spacer(),
-            FlatButton(
-              onPressed: () {
-                if (_isPlaying) {
-                  _pausePlayer();
-                } else {
-                  if (_playerSubscription == null) {
-                    this.setState(() {
-                      this._isPlaying = true;
-                    });
-                    Timer(Duration(milliseconds: 200), () {
-                      startPlayer(cursong.previewUrl);
-                    });
-                  } else {
-                    _resumePlayer();
-                  }
-                }
-              },
-              padding: EdgeInsets.all(8.0),
-              child: Image(
-                image: _isPlaying
-                    ? AssetImage('res/icons/ic_pause.png')
-                    : AssetImage('res/icons/ic_play.png'),
-              ),
-            ),
-          ],
-        ));
+    return SoundPlayerUI.fromTrack(Track(trackTitle: cursong.trackTitle, trackAuthor: cursong.trackAuthor));
+
+    // return Container(
+    //     //height: 10.0,
+    //     color: StyleConstants.backgroundColorDark,
+    //     child: Row(
+    //       children: <Widget>[
+    //         //little picture
+    //         Container(
+    //           height: 60.0,
+    //           width: 60.0,
+    //           child: Image.network(
+    //             cursong.artworkUrl(512),
+    //             fit: BoxFit.cover,
+    //           ),
+    //         ),
+    //         SizedBox(
+    //           width: 10.0,
+    //         ),
+    //         //song name and artist
+    //         Column(
+    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: <Widget>[
+    //             Text(
+    //               cursong.title,
+    //               style: TextStyle(
+    //                 color: Colors.black,
+    //                 fontSize: 20.0,
+    //                 fontWeight: FontWeight.w400,
+    //               ),
+    //               overflow: TextOverflow.clip,
+    //             ),
+    //             Text(
+    //               cursong.artistName,
+    //               style: TextStyle(
+    //                   color: Colors.black,
+    //                   fontSize: 15.0,
+    //                   fontWeight: FontWeight.w300),
+    //             ),
+    //           ],
+    //         ),
+    //         Spacer(),
+    //         FlatButton(
+    //           onPressed: () {
+    //             if (_isPlaying) {
+    //               _pausePlayer();
+    //             } else {
+    //               if (_playerSubscription == null) {
+    //                 this.setState(() {
+    //                   this._isPlaying = true;
+    //                 });
+    //                 Timer(Duration(milliseconds: 200), () {
+    //                   startPlayer(cursong.previewUrl);
+    //                 });
+    //               } else {
+    //                 _resumePlayer();
+    //               }
+    //             }
+    //           },
+    //           padding: EdgeInsets.all(8.0),
+    //           child: Image(
+    //             image: _isPlaying
+    //                 ? AssetImage('res/icons/ic_pause.png')
+    //                 : AssetImage('res/icons/ic_play.png'),
+    //           ),
+    //         ),
+    //       ],
+    //     ));
   }
 
   File _image;
-  FlutterSound flutterSound = new FlutterSound();
+  FlutterSoundPlayer flutterSound = new FlutterSoundPlayer();
 
   void initState() {
     super.initState();
@@ -151,10 +152,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
     localityInputController = new TextEditingController(text: locality);
     feelingInputController = new TextEditingController();
     descriptionInputController = new TextEditingController();
-    flutterSound = FlutterSound();
-    flutterSound.setSubscriptionDuration(0.01);
-    flutterSound.setDbPeakLevelUpdate(0.8);
-    flutterSound.setDbLevelEnabled(true);
+    flutterSound = FlutterSoundPlayer();
 
     setState(() {
       nowsong = new SongResult(title: "The Box", artist: "Roddy Ricch");
@@ -164,9 +162,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
   }
 
   Future<void> initSpeechState() async {
-    PermissionStatus permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.microphone);
-    print(permission);
+    await Permission.microphone.request();
     bool hasSpeech = await speech.initialize(onStatus: statusListener);
     if (!mounted) return;
     setState(() {
@@ -187,12 +183,11 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
 
   Future uploadImage() async {
     print(Path.basename(_image.path));
-    StorageReference reference = FirebaseStorage.instance
+    Reference reference = FirebaseStorage.instance
         .ref()
         .child("photos/${Path.basename(_image.path)}");
-    StorageUploadTask upload = reference.putFile(_image);
-    await upload.onComplete;
-    print('complete');
+    UploadTask upload = reference.putFile(_image);
+    await upload.whenComplete(() => print('complete'));
   }
 
   Future getRecording() async {
@@ -202,92 +197,92 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
 
   bool _isPlaying = false;
   StreamSubscription _playerSubscription;
-
-  String _startText = '00:00';
-  String _endText = '00:00';
-  double slider_current_position = 0.0;
-  double max_duration = 1.0;
-
-  void startPlayer(String uri) async {
-    String path = await flutterSound.startPlayer(uri);
-    await flutterSound.setVolume(1.0);
-    print('startPlayer: $path');
-
-    try {
-      _playerSubscription = flutterSound.onPlayerStateChanged.listen((e) async {
-        if (e != null) {
-          slider_current_position = e.currentPosition;
-          max_duration = e.duration;
-
-          final remaining = e.duration - e.currentPosition;
-
-          DateTime date = DateTime.fromMillisecondsSinceEpoch(
-              e.currentPosition.toInt(),
-              isUtc: true);
-
-          DateTime endDate = DateTime.fromMillisecondsSinceEpoch(
-              remaining.toInt(),
-              isUtc: true);
-
-          String startText = DateFormat('mm:ss', 'en_GB').format(date);
-          String endText = DateFormat('mm:ss', 'en_GB').format(endDate);
-
-          if (this.mounted) {
-            this.setState(() {
-              this._startText = startText;
-              this._endText = endText;
-              this.slider_current_position = slider_current_position;
-              this.max_duration = max_duration;
-            });
-          }
-        } else {
-          slider_current_position = 0;
-
-          if (_playerSubscription != null) {
-            _playerSubscription.cancel();
-            _playerSubscription = null;
-          }
-          this.setState(() {
-            this._isPlaying = false;
-            this._startText = '00:00';
-            this._endText = '00:00';
-          });
-        }
-      });
-    } catch (err) {
-      print('error: $err');
-      this.setState(() {
-        this._isPlaying = false;
-      });
-    }
-  }
-
-  _pausePlayer() async {
-    String result = await flutterSound.pausePlayer();
-    print('pausePlayer: $result');
-    this.setState(() {
-      this._isPlaying = false;
-    });
-  }
-
-  _resumePlayer() async {
-    String result = await flutterSound.resumePlayer();
-    print('resumePlayer: $result');
-    this.setState(() {
-      this._isPlaying = true;
-    });
-  }
-
-  _seekToPlayer(int milliSecs) async {
-    int secs = Platform.isIOS ? milliSecs / 1000 : milliSecs;
-
-    if (_playerSubscription == null) {
-      return;
-    }
-
-    String result = await flutterSound.seekToPlayer(secs);
-    print('seekToPlayer: $result');
-  }
+  //
+  // String _startText = '00:00';
+  // String _endText = '00:00';
+  // double slider_current_position = 0.0;
+  // double max_duration = 1.0;
+  //
+  // void startPlayer(String uri) async {
+  //   String path = await flutterSound.startPlayer(uri);
+  //   await flutterSound.setVolume(1.0);
+  //   print('startPlayer: $path');
+  //
+  //   try {
+  //     _playerSubscription = flutterSound.onPlayerStateChanged.listen((e) async {
+  //       if (e != null) {
+  //         slider_current_position = e.currentPosition;
+  //         max_duration = e.duration;
+  //
+  //         final remaining = e.duration - e.currentPosition;
+  //
+  //         DateTime date = DateTime.fromMillisecondsSinceEpoch(
+  //             e.currentPosition.toInt(),
+  //             isUtc: true);
+  //
+  //         DateTime endDate = DateTime.fromMillisecondsSinceEpoch(
+  //             remaining.toInt(),
+  //             isUtc: true);
+  //
+  //         String startText = DateFormat('mm:ss', 'en_GB').format(date);
+  //         String endText = DateFormat('mm:ss', 'en_GB').format(endDate);
+  //
+  //         if (this.mounted) {
+  //           this.setState(() {
+  //             this._startText = startText;
+  //             this._endText = endText;
+  //             this.slider_current_position = slider_current_position;
+  //             this.max_duration = max_duration;
+  //           });
+  //         }
+  //       } else {
+  //         slider_current_position = 0;
+  //
+  //         if (_playerSubscription != null) {
+  //           _playerSubscription.cancel();
+  //           _playerSubscription = null;
+  //         }
+  //         this.setState(() {
+  //           this._isPlaying = false;
+  //           this._startText = '00:00';
+  //           this._endText = '00:00';
+  //         });
+  //       }
+  //     });
+  //   } catch (err) {
+  //     print('error: $err');
+  //     this.setState(() {
+  //       this._isPlaying = false;
+  //     });
+  //   }
+  // }
+  //
+  // _pausePlayer() async {
+  //   String result = await flutterSound.pausePlayer();
+  //   print('pausePlayer: $result');
+  //   this.setState(() {
+  //     this._isPlaying = false;
+  //   });
+  // }
+  //
+  // _resumePlayer() async {
+  //   String result = await flutterSound.resumePlayer();
+  //   print('resumePlayer: $result');
+  //   this.setState(() {
+  //     this._isPlaying = true;
+  //   });
+  // }
+  //
+  // _seekToPlayer(int milliSecs) async {
+  //   int secs = Platform.isIOS ? milliSecs / 1000 : milliSecs;
+  //
+  //   if (_playerSubscription == null) {
+  //     return;
+  //   }
+  //
+  //   String result = await flutterSound.seekToPlayer(secs);
+  //   print('seekToPlayer: $result');
+  // }
 
   Future<Search> _search;
   String _searchTextInProgress;
@@ -326,12 +321,12 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
 
   _submit(BuildContext context) async {
     print("Starting to submit");
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    User user = await FirebaseAuth.instance.currentUser;
     String url = await FirebaseStorage.instance
         .ref()
         .child("photos/${Path.basename(_image.path)}")
         .getDownloadURL();
-    DocumentReference ref = await Firestore.instance.collection('entries').add({
+    DocumentReference ref = await FirebaseFirestore.instance.collection('entries').add({
       "imageUrl": url,
       "uid": user.uid,
       "description": descriptionInputController.text,
@@ -340,28 +335,28 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
       "title": titleInputController.text,
       "locality": localityInputController.text,
       "songtitle":
-      cursong.title,
+      cursong.trackTitle,
       "songartist":
-      cursong.artistName,
-      "songlink":
-      cursong.link,
-      "songpreviewUrl":
-      cursong.previewUrl,
+      cursong.trackAuthor,
+      // "songlink":
+      // cursong.,
+      // "songpreviewUrl":
+      // cursong.previewUrl,
       "songArtworkRawUrl":
-      cursong.artworkRawUrl,
+      cursong.albumArtUrl,
 
     });
     DocumentSnapshot snap =
-        await Firestore.instance.collection('users').document(user.uid).get();
+        await FirebaseFirestore.instance.collection('users').document(user.uid).get();
     List hold = snap['entries'];
     if (hold == null) {
       hold = new List();
     }
-    hold.add(ref.documentID);
-    Firestore.instance
+    hold.add(ref.id);
+    FirebaseFirestore.instance
         .collection('users')
-        .document(user.uid)
-        .updateData({"entries": hold});
+        .doc(user.uid)
+        .update({"entries": hold});
     Navigator.pop(context);
   }
 
@@ -413,7 +408,7 @@ class _AddMemoryScreenState extends State<AddMemoryScreen> {
                     if (sons.length == 0) {
                       sons.add(songs[0]);
                     }
-                    cursong = sons[0];
+                    cursong = Track(trackTitle: sons[0].title, trackAuthor: sons[0].artistName);
 
                     return _nowPlayingPanel();
                   } else if (snapshot.hasError) {
